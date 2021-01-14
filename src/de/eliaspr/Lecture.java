@@ -45,7 +45,7 @@ public class Lecture {
                                 line = line.substring(2);
                                 int uhrInx;
                                 String time = line.substring(0, uhrInx = line.indexOf(" Uhr"));
-                                String lectureName = line.substring(line.indexOf(':', uhrInx) + 1);
+                                String lectureName = line.substring(line.indexOf(':', uhrInx) + 2);
                                 String[] timeStamps = time.split("-");
                                 list.add(new Lecture(parseTimeStamp(timeStamps[0]), parseTimeStamp(timeStamps[1]), lectureName));
                             }

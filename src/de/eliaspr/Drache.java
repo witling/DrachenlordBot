@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.managers.ChannelManager;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 
 import javax.annotation.Nonnull;
@@ -45,6 +47,7 @@ public class Drache extends ListenerAdapter {
         builder.setCompression(Compression.NONE);
 
         builder.addEventListeners(new Drache());
+        builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         JDA jda = builder.build();
         jda.awaitReady();
     }
@@ -60,7 +63,7 @@ public class Drache extends ListenerAdapter {
                 String msg = event.getMessage().getContentRaw().toLowerCase().trim();
                 boolean etzala;
                 if ((etzala = msg.contains("etzala")) || msg.contains("meddl")) {
-                    if (etzala/* && event.getGuild().getIdLong() == 657602012179070988L*/) {
+                    if (etzala && event.getGuild().getIdLong() == 657602012179070988L) {
                         if (msg.contains("wi") && msg.contains("lang") && msg.contains("noch")) {
                             Calendar c = Calendar.getInstance();
                             int dayAgeMinutes = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
@@ -84,38 +87,39 @@ public class Drache extends ListenerAdapter {
                             return;
                         } else if (msg.contains("mach") && msg.contains("countdown")) {
                             final Lecture currentLecture = Lecture.getCurrentLecture(event.getGuild());
+                            ChannelManager channelManager = event.getTextChannel().getManager();
                             if (currentLecture != null) {
                                 boolean alreadyStarted;
                                 synchronized (activeCountdowns) {
                                     alreadyStarted = activeCountdowns.contains(currentLecture.name);
                                 }
                                 if (!alreadyStarted) {
+                                    final String oldTopic = event.getTextChannel().getTopic();
                                     Thread th = new Thread(() -> {
                                         synchronized (activeCountdowns) {
                                             activeCountdowns.add(currentLecture.name);
                                         }
-                                        event.getChannel().sendMessage("Countdown aktiv ab 15 Minuten :thumbsup:").queue();
-                                        int lastDisplayedRemaining = -1;
+                                        event.getChannel().sendMessage("Countdown aktiv :thumbsup:").queue();
                                         while (true) {
                                             Calendar c = Calendar.getInstance();
                                             int dayAgeMinutes = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
-                                            int remainingMinutes = currentLecture.endTime - dayAgeMinutes;
-                                            if (remainingMinutes != lastDisplayedRemaining) {
-                                                lastDisplayedRemaining = remainingMinutes;
-                                                if(remainingMinutes == 0) {
-                                                    event.getChannel().sendMessage(
-                                                            currentLecture.name + " ist vorbei! :beer: "
-                                                    ).queue();
-                                                    break;
-                                                } else if (remainingMinutes < 15) {
-                                                    event.getChannel().sendMessage(
-                                                            currentLecture.name + " ist in " + remainingMinutes + " " +
-                                                                    (remainingMinutes == 1 ? "Minute" : "Minuten") + " zu Ende!"
-                                                    ).queue();
-                                                }
+                                            int remainingSeconds = (currentLecture.endTime - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
+                                            if (remainingSeconds <= 0) {
+                                                channelManager.setTopic(oldTopic).queue();
+                                                break;
                                             }
+                                            int remainingMinutes = remainingSeconds / 60;
+                                            remainingSeconds %= 60;
+                                            int remainingHours = remainingMinutes / 60;
+                                            remainingMinutes %= 60;
+
+                                            String topic = String.format("%s ist int %02d:%02d:%02d zu Ende",
+                                                    currentLecture.name, remainingHours, remainingMinutes, remainingSeconds);
+                                            System.out.println(topic);
+                                            channelManager.setTopic(topic).queue();
+
                                             try {
-                                                Thread.sleep(1000);
+                                                Thread.sleep(5000);
                                             } catch (InterruptedException e) {
                                                 break;
                                             }
@@ -133,10 +137,12 @@ public class Drache extends ListenerAdapter {
                             return;
                         } else if (msg.contains("ein") && msg.contains("freiwillig")) {
                             Role nerdRole = event.getGuild().getRoleById(657894994186731520L);
-                            List<Member> available = event.getGuild().getMembersWithRoles(nerdRole);
-                            Random random = new Random();
-                            Member member = available.get(random.nextInt(available.size()));
-                            event.getChannel().sendMessage("Der Lord der Drachen hat " + member.getAsMention() + " auserwählt").queue();
+                            Guild guild = event.getJDA().getGuildById(657602012179070988L);
+                            guild.findMembers(member -> member.getRoles().contains(nerdRole)).onSuccess(list -> {
+                                Random random = new Random();
+                                Member member = list.get(random.nextInt(list.size()));
+                                event.getChannel().sendMessage("Der Lord der Drachen hat " + member.getAsMention() + " auserwählt").queue();
+                            });
                             return;
                         }
                     }
