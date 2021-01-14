@@ -2,8 +2,7 @@ package de.eliaspr;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.Compression;
@@ -61,7 +60,7 @@ public class Drache extends ListenerAdapter {
                 String msg = event.getMessage().getContentRaw().toLowerCase().trim();
                 boolean etzala;
                 if ((etzala = msg.contains("etzala")) || msg.contains("meddl")) {
-                    if (etzala && event.getGuild().getIdLong() == 657602012179070988L) {
+                    if (etzala/* && event.getGuild().getIdLong() == 657602012179070988L*/) {
                         if (msg.contains("wi") && msg.contains("lang") && msg.contains("noch")) {
                             Calendar c = Calendar.getInstance();
                             int dayAgeMinutes = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
@@ -131,6 +130,13 @@ public class Drache extends ListenerAdapter {
                             } else {
                                 event.getChannel().sendMessage("Gerade läuft keine Vorlesung").queue();
                             }
+                            return;
+                        } else if (msg.contains("ein") && msg.contains("freiwillig")) {
+                            Role nerdRole = event.getGuild().getRoleById(657894994186731520L);
+                            List<Member> available = event.getGuild().getMembersWithRoles(nerdRole);
+                            Random random = new Random();
+                            Member member = available.get(random.nextInt(available.size()));
+                            event.getChannel().sendMessage("Der Lord der Drachen hat " + member.getAsMention() + " auserwählt").queue();
                             return;
                         }
                     }
