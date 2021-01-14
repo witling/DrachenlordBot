@@ -106,6 +106,7 @@ public class Drache extends ListenerAdapter {
                                             int remainingSeconds = (currentLecture.endTime - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
                                             if (remainingSeconds <= 0) {
                                                 channelManager.setTopic(oldTopic).queue();
+                                                event.getChannel().sendMessage(currentLecture.name + " ist zu Ende! :beer: @pat#9295 @bruceandilee#2574").queue();
                                                 break;
                                             }
                                             int remainingMinutes = remainingSeconds / 60;
