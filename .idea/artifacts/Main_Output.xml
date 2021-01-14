@@ -1,0 +1,17 @@
+<component name="ArtifactManager">
+  <artifact name="Main Output">
+    <output-path>$PROJECT_DIR$/export</output-path>
+    <root id="root">
+      <element id="archive" name="DiscordBots.jar">
+        <element id="module-output" name="EH_DiscordBots" />
+        <element id="extracted-dir" path="$PROJECT_DIR$/lib/JavaXP.anotherJSON.jar" path-in-jar="/" />
+        <element id="extracted-dir" path="$PROJECT_DIR$/lib/slf4j-simple-1.7.9.jar" path-in-jar="/" />
+        <element id="extracted-dir" path="$PROJECT_DIR$/lib/MathParser.org-mXparser-v.4.4.0-jdk11.jar" path-in-jar="/" />
+        <element id="extracted-dir" path="$PROJECT_DIR$/lib/JDA-4.2.0_168-withDependencies.jar" path-in-jar="/" />
+      </element>
+      <element id="directory" name="assets">
+        <element id="dir-copy" path="$PROJECT_DIR$/assets" />
+      </element>
+    </root>
+  </artifact>
+</component>
