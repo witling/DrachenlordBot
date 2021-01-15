@@ -1,16 +1,20 @@
 package de.eliaspr;
 
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.managers.ChannelManager;
 
 import java.util.Calendar;
 
 public class Countdown implements Runnable {
 
+    static {
+
+    }
+
     private final Lecture lecture;
     private final TextChannel channel;
     private boolean shouldStop = false;
-    private Runnable onCountdownEnd = () -> {};
+    private Runnable onCountdownEnd = () -> {
+    };
 
     public Countdown(Lecture lecture, TextChannel channel) {
         this.lecture = lecture;
@@ -35,6 +39,7 @@ public class Countdown implements Runnable {
     public void run() {
         String oldTopic = channel.getTopic();
         channel.sendMessage("Countdown aktiv :thumbsup:").queue();
+        long lastUpdateTime = 0;
 
         while (true) {
             Calendar c = Calendar.getInstance();
@@ -45,23 +50,28 @@ public class Countdown implements Runnable {
                 channel.sendMessage(lecture.name + " ist zu Ende! :beer: @pat#9295 @bruceandilee#2574").queue();
                 break;
             }
-            int remainingMinutes = remainingSeconds / 60;
-            remainingSeconds %= 60;
-            int remainingHours = remainingMinutes / 60;
-            remainingMinutes %= 60;
 
-            String topic = String.format("%s ist int %02d:%02d:%02d zu Ende",
-                    lecture.name, remainingHours, remainingMinutes, remainingSeconds);
-            System.out.println(topic);
-            channel.getManager().setTopic(topic).queue();
+            if (remainingSeconds > 5 * 60) {
+                int remainingMinutes = remainingSeconds / 60;
+                long now = System.currentTimeMillis();
+                if(now > lastUpdateTime + 5 * 60 * 1000) {
+                    int remainingHours = remainingMinutes / 60;
+                    remainingMinutes %= 60;
+                    String topic = String.format("%s ist in %02d:%02d zu Ende",
+                            lecture.name, remainingHours, remainingMinutes);
+                    System.out.println(topic);
+                    channel.getManager().setTopic(topic).queue();
+                    lastUpdateTime = now;
+                }
+            }
 
             synchronized (this) {
-                if(shouldStop)
+                if (shouldStop)
                     break;
             }
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 break;
             }

@@ -21,7 +21,8 @@ import java.util.*;
 
 public class Drache extends ListenerAdapter {
 
-    private static final String[] panikEmojis = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
+    private static final String[] panikEmotes = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
+    private static final String[] happyEmotes = {"pepega", "yes", "pogChamp", "pog", "uzbl"};
     private static final HashMap<Long, Countdown> activeCountdowns = new HashMap<>();
 
     private static ArrayList<String> messages = new ArrayList<>();
@@ -78,13 +79,13 @@ public class Drache extends ListenerAdapter {
                                 log(event, "Sending remaining time of " + lecture.name);
                                 int remainingMinutes = remainingSecnds / 60;
                                 remainingSecnds %= 60;
-                                boolean minigun = remainingMinutes > 30;
+                                int rem = remainingMinutes;
                                 int remainingHours = remainingMinutes / 60;
                                 remainingMinutes %= 60;
                                 event.getChannel().sendMessage(
                                         String.format("%s dauert noch %02d:%02d:%02d %s",
                                                 lecture.name, remainingHours, remainingMinutes, remainingSecnds,
-                                                minigun ? randomPanikEmote(event.getGuild()) : ""
+                                                rem > 30 ? randomEmote(event.getGuild(), panikEmotes) : rem < 5 ? randomEmote(event.getGuild(), happyEmotes) : ""
                                         )).queue();
                             } else {
                                 event.getChannel().sendMessage("Gerade läuft keine Vorlesung").queue();
@@ -146,6 +147,9 @@ public class Drache extends ListenerAdapter {
                     log(event, "Sending \"" + picture.getPath() + "\"");
                     event.getChannel().sendFile(picture).queue();
                 }
+                if(msg.contains("was") && msg.contains("verpasst") && msg.length() < 30) {
+                    event.getChannel().sendMessage("Du hast nix verpasst " + getServerEmote(event.getGuild(), "dhbw_logo")).queue();
+                }
 //                if (msg.contains("rainer") || msg.contains("winkler")) {
 //                    new Thread(() -> {
 //                        for (int i = 0; i < 3; i++) {
@@ -166,8 +170,12 @@ public class Drache extends ListenerAdapter {
         }
     }
 
-    private String randomPanikEmote(Guild guild) {
-        String emoteName = panikEmojis[new Random().nextInt(panikEmojis.length)];
+    private String randomEmote(Guild guild, String[] emotes) {
+        String emoteName = emotes[new Random().nextInt(emotes.length)];
+        return getServerEmote(guild, emoteName);
+    }
+
+    private String getServerEmote(Guild guild, String emoteName) {
         List<Emote> result = guild.getEmotesByName(emoteName, true);
         if (result.isEmpty())
             return "";
