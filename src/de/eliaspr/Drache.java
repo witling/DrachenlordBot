@@ -22,6 +22,7 @@ import java.util.*;
 
 public class Drache extends ListenerAdapter {
 
+    private static final String[] panikEmojis = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
     private static final ArrayList<String> activeCountdowns = new ArrayList<>();
 
     private static ArrayList<String> messages = new ArrayList<>();
@@ -79,7 +80,7 @@ public class Drache extends ListenerAdapter {
                                 event.getChannel().sendMessage(
                                         String.format("%s dauert noch %02d:%02d:%02d %s",
                                                 lecture.name, remainingHours, remainingMinutes, remainingSecnds,
-                                                minigun ? ":pepeMinigun:" : ""
+                                                minigun ? randomPanikEmote(event.getGuild()) : ""
                                         )).queue();
                             } else {
                                 event.getChannel().sendMessage("Gerade läuft keine Vorlesung").queue();
@@ -185,11 +186,13 @@ public class Drache extends ListenerAdapter {
         }
     }
 
-    private int parseTimeStamp(String timeStamp) {
-        String[] spl = timeStamp.split(":");
-        int hours = Integer.parseInt(spl[0]);
-        int minutes = Integer.parseInt(spl[1]);
-        return 60 * hours + minutes;
+    private String randomPanikEmote(Guild guild) {
+        String emoteName = panikEmojis[new Random().nextInt(panikEmojis.length)];
+        List<Emote> result = guild.getEmotesByName(emoteName, true);
+        if(result.isEmpty())
+            return "";
+        Emote first = result.get(0);
+        return first.getAsMention();
     }
 
     public static String getWikiLink() {
