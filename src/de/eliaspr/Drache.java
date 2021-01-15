@@ -24,6 +24,7 @@ public class Drache extends ListenerAdapter {
 
     private static final String[] panikEmojis = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
     private static final ArrayList<String> activeCountdowns = new ArrayList<>();
+    private static final HashSet<String> stopCountdowns = new HashSet<>();
 
     private static ArrayList<String> messages = new ArrayList<>();
     private static ArrayList<File> photos = new ArrayList<>();
@@ -62,6 +63,11 @@ public class Drache extends ListenerAdapter {
         try {
             if (DiscordBots.checkChannel(event.getChannel()) && !event.getAuthor().isBot()) {
                 String msg = event.getMessage().getContentRaw().toLowerCase().trim();
+                if(msg.equals("!countdownstop")) {
+                    synchronized (stopCountdowns) {
+                        stopCountdowns.add(event.getTextChannel().getId());
+                    }
+                }
                 boolean etzala;
                 if ((etzala = msg.contains("etzala")) || msg.contains("meddl")) {
                     if (etzala && event.getGuild().getIdLong() == 657602012179070988L) {
@@ -89,16 +95,20 @@ public class Drache extends ListenerAdapter {
                         } else if (msg.contains("mach") && msg.contains("countdown")) {
                             final Lecture currentLecture = Lecture.getCurrentLecture(event.getGuild());
                             ChannelManager channelManager = event.getTextChannel().getManager();
+                            String channelId = event.getTextChannel().getId();
                             if (currentLecture != null) {
                                 boolean alreadyStarted;
                                 synchronized (activeCountdowns) {
-                                    alreadyStarted = activeCountdowns.contains(currentLecture.name);
+                                    alreadyStarted = activeCountdowns.contains(channelId);
+                                }
+                                synchronized (stopCountdowns) {
+                                    stopCountdowns.remove(channelId);
                                 }
                                 if (!alreadyStarted) {
                                     final String oldTopic = event.getTextChannel().getTopic();
                                     Thread th = new Thread(() -> {
                                         synchronized (activeCountdowns) {
-                                            activeCountdowns.add(currentLecture.name);
+                                            activeCountdowns.add(channelId);
                                         }
                                         event.getChannel().sendMessage("Countdown aktiv :thumbsup:").queue();
                                         while (true) {
@@ -120,6 +130,13 @@ public class Drache extends ListenerAdapter {
                                             System.out.println(topic);
                                             channelManager.setTopic(topic).queue();
 
+                                            synchronized (stopCountdowns) {
+                                                if(stopCountdowns.contains(channelId)) {
+                                                    channelManager.setTopic(oldTopic).queue();
+                                                    break;
+                                                }
+                                            }
+
                                             try {
                                                 Thread.sleep(5000);
                                             } catch (InterruptedException e) {
@@ -127,7 +144,7 @@ public class Drache extends ListenerAdapter {
                                             }
                                         }
                                         synchronized (activeCountdowns) {
-                                            activeCountdowns.remove(currentLecture.name);
+                                            activeCountdowns.remove(channelId);
                                         }
                                     });
                                     th.setDaemon(true);
