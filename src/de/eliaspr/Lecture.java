@@ -37,7 +37,7 @@ public class Lecture {
                 String textMsg = message.getContentRaw();
                 if (textMsg.contains("Stundenplan für morgen")) {
                     String date = textMsg.substring(0, 8);
-                    if (date.equals(String.format("%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH) + 1, c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) % 100))) {
+                    if (date.equals(String.format("%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) % 100))) {
                         String[] msgLines = textMsg.split("\n");
                         for (String line : msgLines) {
                             line = line.trim();
