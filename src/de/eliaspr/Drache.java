@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 
@@ -23,8 +22,7 @@ import java.util.*;
 public class Drache extends ListenerAdapter {
 
     private static final String[] panikEmojis = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
-    private static final ArrayList<String> activeCountdowns = new ArrayList<>();
-    private static final HashSet<String> stopCountdowns = new HashSet<>();
+    private static final HashMap<Long, Countdown> activeCountdowns = new HashMap<>();
 
     private static ArrayList<String> messages = new ArrayList<>();
     private static ArrayList<File> photos = new ArrayList<>();
@@ -63,10 +61,10 @@ public class Drache extends ListenerAdapter {
         try {
             if (DiscordBots.checkChannel(event.getChannel()) && !event.getAuthor().isBot()) {
                 String msg = event.getMessage().getContentRaw().toLowerCase().trim();
-                if(msg.equals("!countdownstop")) {
-                    synchronized (stopCountdowns) {
-                        stopCountdowns.add(event.getTextChannel().getId());
-                    }
+                if (msg.equals("!countdownstop")) {
+                    Countdown countdown = activeCountdowns.get(event.getChannel().getIdLong());
+                    if (countdown != null)
+                        countdown.stop();
                 }
                 boolean etzala;
                 if ((etzala = msg.contains("etzala")) || msg.contains("meddl")) {
@@ -93,62 +91,27 @@ public class Drache extends ListenerAdapter {
                             }
                             return;
                         } else if (msg.contains("mach") && msg.contains("countdown")) {
+
+
                             final Lecture currentLecture = Lecture.getCurrentLecture(event.getGuild());
-                            ChannelManager channelManager = event.getTextChannel().getManager();
-                            String channelId = event.getTextChannel().getId();
                             if (currentLecture != null) {
-                                boolean alreadyStarted;
+                                TextChannel channel = event.getTextChannel();
+                                long channelId = channel.getIdLong();
+                                boolean countdownExists;
                                 synchronized (activeCountdowns) {
-                                    alreadyStarted = activeCountdowns.contains(channelId);
+                                    countdownExists = activeCountdowns.containsKey(channelId);
                                 }
-                                synchronized (stopCountdowns) {
-                                    stopCountdowns.remove(channelId);
-                                }
-                                if (!alreadyStarted) {
-                                    final String oldTopic = event.getTextChannel().getTopic();
-                                    Thread th = new Thread(() -> {
-                                        synchronized (activeCountdowns) {
-                                            activeCountdowns.add(channelId);
-                                        }
-                                        event.getChannel().sendMessage("Countdown aktiv :thumbsup:").queue();
-                                        while (true) {
-                                            Calendar c = Calendar.getInstance();
-                                            int dayAgeMinutes = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
-                                            int remainingSeconds = (currentLecture.endTime - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
-                                            if (remainingSeconds <= 0) {
-                                                channelManager.setTopic(oldTopic).queue();
-                                                event.getChannel().sendMessage(currentLecture.name + " ist zu Ende! :beer: @pat#9295 @bruceandilee#2574").queue();
-                                                break;
-                                            }
-                                            int remainingMinutes = remainingSeconds / 60;
-                                            remainingSeconds %= 60;
-                                            int remainingHours = remainingMinutes / 60;
-                                            remainingMinutes %= 60;
-
-                                            String topic = String.format("%s ist int %02d:%02d:%02d zu Ende",
-                                                    currentLecture.name, remainingHours, remainingMinutes, remainingSeconds);
-                                            System.out.println(topic);
-                                            channelManager.setTopic(topic).queue();
-
-                                            synchronized (stopCountdowns) {
-                                                if(stopCountdowns.contains(channelId)) {
-                                                    channelManager.setTopic(oldTopic).queue();
-                                                    break;
-                                                }
-                                            }
-
-                                            try {
-                                                Thread.sleep(5000);
-                                            } catch (InterruptedException e) {
-                                                break;
-                                            }
-                                        }
+                                if (!countdownExists) {
+                                    Countdown countdown = new Countdown(currentLecture, channel);
+                                    countdown.setOnCountdownEnd(() -> {
                                         synchronized (activeCountdowns) {
                                             activeCountdowns.remove(channelId);
                                         }
                                     });
-                                    th.setDaemon(true);
-                                    th.start();
+                                    synchronized (activeCountdowns) {
+                                        activeCountdowns.put(channelId, countdown);
+                                    }
+                                    countdown.createThread().start();
                                 }
                             } else {
                                 event.getChannel().sendMessage("Gerade läuft keine Vorlesung").queue();
@@ -206,7 +169,7 @@ public class Drache extends ListenerAdapter {
     private String randomPanikEmote(Guild guild) {
         String emoteName = panikEmojis[new Random().nextInt(panikEmojis.length)];
         List<Emote> result = guild.getEmotesByName(emoteName, true);
-        if(result.isEmpty())
+        if (result.isEmpty())
             return "";
         Emote first = result.get(0);
         return first.getAsMention();
