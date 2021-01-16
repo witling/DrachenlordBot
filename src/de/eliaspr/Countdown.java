@@ -47,7 +47,9 @@ public class Countdown implements Runnable {
             int remainingSeconds = (lecture.endTime - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
             if (remainingSeconds <= 0) {
                 channel.getManager().setTopic(oldTopic).queue();
-                channel.sendMessage(lecture.name + " ist zu Ende! :beer: @pat#9295 @bruceandilee#2574").queue();
+                channel.sendMessage(lecture.name + " ist zu Ende! :beer: " +
+                        channel.getJDA().getUserById(360834565490737153L).getAsMention() + " "+
+                        channel.getJDA().getUserById(159655372691341313L).getAsMention()).queue();
                 break;
             }
 
@@ -63,6 +65,8 @@ public class Countdown implements Runnable {
                     channel.getManager().setTopic(topic).queue();
                     lastUpdateTime = now;
                 }
+            } else if (remainingSeconds <= 10) {
+                channel.sendMessage(String.valueOf(remainingSeconds)).queue();
             }
 
             synchronized (this) {

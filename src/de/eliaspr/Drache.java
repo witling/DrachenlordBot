@@ -21,6 +21,7 @@ import java.util.*;
 
 public class Drache extends ListenerAdapter {
 
+    private static final Random random = new Random();
     private static final String[] panikEmotes = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
     private static final String[] happyEmotes = {"pepega", "yes", "pogChamp", "pog", "uzbl"};
     private static final HashMap<Long, Countdown> activeCountdowns = new HashMap<>();
@@ -28,7 +29,6 @@ public class Drache extends ListenerAdapter {
     private static ArrayList<String> messages = new ArrayList<>();
     private static ArrayList<File> photos = new ArrayList<>();
     private static ArrayList<File> photosNSFW = new ArrayList<>();
-    private static Random random = new Random();
 
     public static void startDracheBot() throws LoginException, InterruptedException, IOException {
         messages.addAll(Files.readAllLines(new File("assets/drache/questions.txt").toPath()));
@@ -62,106 +62,88 @@ public class Drache extends ListenerAdapter {
         try {
             if (DiscordBots.checkChannel(event.getChannel()) && !event.getAuthor().isBot()) {
                 String msg = event.getMessage().getContentRaw().toLowerCase().trim();
-                if (msg.equals("!countdownstop")) {
-                    Countdown countdown = activeCountdowns.get(event.getChannel().getIdLong());
-                    if (countdown != null)
-                        countdown.stop();
-                }
                 boolean etzala;
                 if ((etzala = msg.contains("etzala")) || msg.contains("meddl")) {
                     if (etzala && event.getGuild().getIdLong() == 657602012179070988L) {
+                        boolean normalEtzala = false;
                         if (msg.contains("wi") && msg.contains("lang") && msg.contains("noch")) {
-                            Calendar c = Calendar.getInstance();
-                            int dayAgeMinutes = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
-                            Lecture lecture = Lecture.getCurrentLecture(event.getGuild());
-                            if (lecture != null) {
-                                int remainingSecnds = (lecture.endTime - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
-                                log(event, "Sending remaining time of " + lecture.name);
-                                int remainingMinutes = remainingSecnds / 60;
-                                remainingSecnds %= 60;
-                                int rem = remainingMinutes;
-                                int remainingHours = remainingMinutes / 60;
-                                remainingMinutes %= 60;
-                                event.getChannel().sendMessage(
-                                        String.format("%s dauert noch %02d:%02d:%02d %s",
-                                                lecture.name, remainingHours, remainingMinutes, remainingSecnds,
-                                                rem > 30 ? randomEmote(event.getGuild(), panikEmotes) : rem < 5 ? randomEmote(event.getGuild(), happyEmotes) : ""
-                                        )).queue();
-                            } else {
-                                event.getChannel().sendMessage("Gerade läuft keine Vorlesung").queue();
-                            }
-                            return;
+                            sendRemainingTime(event);
                         } else if (msg.contains("mach") && msg.contains("countdown")) {
-
-
-                            final Lecture currentLecture = Lecture.getCurrentLecture(event.getGuild());
-                            if (currentLecture != null) {
-                                TextChannel channel = event.getTextChannel();
-                                long channelId = channel.getIdLong();
-                                boolean countdownExists;
-                                synchronized (activeCountdowns) {
-                                    countdownExists = activeCountdowns.containsKey(channelId);
-                                }
-                                if (!countdownExists) {
-                                    Countdown countdown = new Countdown(currentLecture, channel);
-                                    countdown.setOnCountdownEnd(() -> {
-                                        synchronized (activeCountdowns) {
-                                            activeCountdowns.remove(channelId);
-                                        }
-                                    });
-                                    synchronized (activeCountdowns) {
-                                        activeCountdowns.put(channelId, countdown);
-                                    }
-                                    countdown.createThread().start();
-                                }
-                            } else {
-                                event.getChannel().sendMessage("Gerade läuft keine Vorlesung").queue();
+                            startCountdown(event);
+                        } else if (msg.contains("ein")) {
+                            if (msg.contains("freiwillig")) {
+                                Role nerdRole = event.getGuild().getRoleById(657894994186731520L);
+                                Guild guild = event.getJDA().getGuildById(657602012179070988L);
+                                guild.findMembers(member -> member.getRoles().contains(nerdRole)).onSuccess(list -> {
+                                    Member member = list.get(random.nextInt(list.size()));
+                                    event.getChannel().sendMessage("Der Lord der Drachen hat " + member.getAsMention() + " auserwählt").queue();
+                                });
+                            } else if (msg.contains("zitat")) {
+                                sendRandomQuote(event);
                             }
-                            return;
-                        } else if (msg.contains("ein") && msg.contains("freiwillig")) {
-                            Role nerdRole = event.getGuild().getRoleById(657894994186731520L);
-                            Guild guild = event.getJDA().getGuildById(657602012179070988L);
-                            guild.findMembers(member -> member.getRoles().contains(nerdRole)).onSuccess(list -> {
-                                Random random = new Random();
-                                Member member = list.get(random.nextInt(list.size()));
-                                event.getChannel().sendMessage("Der Lord der Drachen hat " + member.getAsMention() + " auserwählt").queue();
-                            });
-                            return;
+                        } else if (msg.contains("pause")) {
+                            int pauseTime = 5;
+                            for (String w : msg.split(" ")) {
+                                int i;
+                                try {
+                                    i = Integer.parseInt(w);
+                                    pauseTime = i;
+                                    break;
+                                } catch (Exception ignored) {
+                                }
+                            }
+                            Calendar c = Calendar.getInstance();
+                            int endMinute = c.get(Calendar.MINUTE) + pauseTime;
+                            int endHour = c.get(Calendar.HOUR_OF_DAY);
+                            while (endMinute >= 60) {
+                                endMinute -= 60;
+                                endHour++;
+                            }
+                            event.getChannel().sendMessage(String.format("Pause bis %02d:%02d :beer:", endHour, endMinute)).queue();
+                        } else if (msg.contains("hilfe")) {
+                            StringBuilder sb = new StringBuilder("**Drache-Bot**").append('\n');
+                            sb.append('\n').append("*Folgende Befehle fangen immer mit `etzala` an:*").append('\n').append('\n');
+                            sb.append(" - wi[e] lang[e] noch").append('\n');
+                            sb.append(" - mach countdown").append('\n');
+                            sb.append(" - ein[e] freiwillig[e[r]]").append('\n');
+                            sb.append(" - ein zitat").append('\n');
+                            sb.append(" - pause [*zeit in minuten*]").append('\n');
+                            sb.append(" - hilfe").append('\n');
+                            sb.append('\n').append("*Alle weiteren Befehle*").append('\n').append('\n');
+                            sb.append(" - meddl / etzala").append('\n');
+                            sb.append(" - foddo").append('\n');
+                            sb.append(" - schanze").append('\n');
+                            sb.append(" - exmatrikulation");
+                            event.getChannel().sendMessage(sb).queue();
+                        } else if(msg.contains("test")) {
+
+                            System.out.println(event.getChannel().getJDA().getUserById(360834565490737153L));
+                            event.getChannel().sendMessage("Test ist zu Ende! :beer: " +
+                                    event.getChannel().getJDA().getUserById(360834565490737153L).getAsMention() + " "+
+                                    event.getChannel().getJDA().getUserById(159655372691341313L).getAsMention()).queue();
+                        } else {
+                            normalEtzala = true;
                         }
+                        if (!normalEtzala)
+                            return;
                     }
                     String answer = messages.get(random.nextInt(messages.size()));
                     log(event, "Sending \"" + answer + "\"");
                     event.getChannel().sendMessage(answer).queue();
-                }
-                if (msg.contains("foddo")) {
+                } else if (msg.contains("foddo")) {
                     File picture = photos.get(random.nextInt(photos.size()));
                     log(event, "Sending \"" + picture.getPath() + "\"");
                     event.getChannel().sendFile(picture).queue();
-                }
-                if (msg.contains("schanze")) {
+                } else if (msg.contains("schanze")) {
                     log(event, "Sending Schanze in Google Maps");
                     event.getChannel().sendMessage("https://goo.gl/maps/gTke3Bdej1QCe72r9").queue();
-                }
-                if (msg.contains("naggig") && ((TextChannel) event.getChannel()).isNSFW()) {
+                } else if (msg.contains("naggig") && ((TextChannel) event.getChannel()).isNSFW()) {
                     File picture = photosNSFW.get(random.nextInt(photosNSFW.size()));
                     log(event, "Sending \"" + picture.getPath() + "\"");
                     event.getChannel().sendFile(picture).queue();
-                }
-                if(msg.contains("was") && msg.contains("verpasst") && msg.length() < 30) {
+                } else if (msg.contains("was") && msg.contains("verpasst")) {
                     event.getChannel().sendMessage("Du hast nix verpasst " + getServerEmote(event.getGuild(), "dhbw_logo")).queue();
-                }
-//                if (msg.contains("rainer") || msg.contains("winkler")) {
-//                    new Thread(() -> {
-//                        for (int i = 0; i < 3; i++) {
-//                            String url = getWikiLink();
-//                            if (url != null) {
-//                                event.getChannel().sendMessage(url).queue();
-//                                break;
-//                            }
-//                        }
-//                    }).start();
-//                }
-                if (msg.contains("exmatrikulation")) {
+                } else if (msg.contains("exmatrikulation")) {
                     event.getChannel().sendMessage("https://www.mosbach.dhbw.de/service-einrichtungen/pruefungsamt/exmatrikulation/").queue();
                 }
             }
@@ -170,8 +152,72 @@ public class Drache extends ListenerAdapter {
         }
     }
 
+    private void sendRandomQuote(MessageReceivedEvent event) {
+        MessageChannel channel = event.getGuild().getTextChannelById(715529189486231654L);
+        if (channel != null) {
+            MessageHistory history = channel.getHistoryFromBeginning(100).complete();
+            List<Message> msgList = history.getRetrievedHistory();
+            if (!msgList.isEmpty()) {
+                Message quote = null;
+                int attempts = 0;
+                do {
+                    quote = msgList.get(random.nextInt(msgList.size()));
+                } while (quote.getContentRaw().isEmpty() && (++attempts) < 100);
+                event.getChannel().sendMessage(quote).queue();
+            }
+        }
+    }
+
+    private void startCountdown(MessageReceivedEvent event) {
+        final Lecture currentLecture = Lecture.getCurrentLecture(event.getGuild());
+        if (currentLecture != null) {
+            TextChannel channel = event.getTextChannel();
+            long channelId = channel.getIdLong();
+            boolean countdownExists;
+            synchronized (activeCountdowns) {
+                countdownExists = activeCountdowns.containsKey(channelId);
+            }
+            if (!countdownExists) {
+                Countdown countdown = new Countdown(currentLecture, channel);
+                countdown.setOnCountdownEnd(() -> {
+                    synchronized (activeCountdowns) {
+                        activeCountdowns.remove(channelId);
+                    }
+                });
+                synchronized (activeCountdowns) {
+                    activeCountdowns.put(channelId, countdown);
+                }
+                countdown.createThread().start();
+            }
+        } else {
+            event.getChannel().sendMessage("Gerade läuft keine Vorlesung").queue();
+        }
+    }
+
+    private void sendRemainingTime(MessageReceivedEvent event) {
+        Calendar c = Calendar.getInstance();
+        int dayAgeMinutes = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
+        Lecture lecture = Lecture.getCurrentLecture(event.getGuild());
+        if (lecture != null) {
+            int remainingSecnds = (lecture.endTime - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
+            log(event, "Sending remaining time of " + lecture.name);
+            int remainingMinutes = remainingSecnds / 60;
+            remainingSecnds %= 60;
+            int rem = remainingMinutes;
+            int remainingHours = remainingMinutes / 60;
+            remainingMinutes %= 60;
+            event.getChannel().sendMessage(
+                    String.format("%s dauert noch %02d:%02d:%02d %s",
+                            lecture.name, remainingHours, remainingMinutes, remainingSecnds,
+                            rem > 30 ? randomEmote(event.getGuild(), panikEmotes) : rem < 5 ? randomEmote(event.getGuild(), happyEmotes) : ""
+                    )).queue();
+        } else {
+            event.getChannel().sendMessage("Gerade läuft keine Vorlesung").queue();
+        }
+    }
+
     private String randomEmote(Guild guild, String[] emotes) {
-        String emoteName = emotes[new Random().nextInt(emotes.length)];
+        String emoteName = emotes[random.nextInt(emotes.length)];
         return getServerEmote(guild, emoteName);
     }
 
@@ -197,5 +243,17 @@ public class Drache extends ListenerAdapter {
             return null;
         }
     }
+
+//                else if (msg.contains("rainer") || msg.contains("winkler")) {
+//                    new Thread(() -> {
+//                        for (int i = 0; i < 3; i++) {
+//                            String url = getWikiLink();
+//                            if (url != null) {
+//                                event.getChannel().sendMessage(url).queue();
+//                                break;
+//                            }
+//                        }
+//                    }).start();
+//                }
 
 }
