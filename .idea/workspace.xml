@@ -6,11 +6,7 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/Countdown.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/Countdown.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/Drache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/Drache.java" afterDir="false" />
-    </list>
+    <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -108,7 +104,7 @@
       <workItem from="1606152084909" duration="153000" />
       <workItem from="1610643608669" duration="199000" />
       <workItem from="1610643920529" duration="9012000" />
-      <workItem from="1610702617412" duration="10743000" />
+      <workItem from="1610702617412" duration="10756000" />
     </task>
     <servers />
   </component>
