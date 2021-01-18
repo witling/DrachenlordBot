@@ -39,7 +39,8 @@ public class Countdown implements Runnable {
     public void run() {
         String oldTopic = channel.getTopic();
         channel.sendMessage("Countdown aktiv :thumbsup:").queue();
-        long lastUpdateTime = 0;
+        long nextUpdateTime = 0;
+        int lastFinalCountdownBroadcast = -1;
 
         while (true) {
             Calendar c = Calendar.getInstance();
@@ -47,26 +48,26 @@ public class Countdown implements Runnable {
             int remainingSeconds = (lecture.endTime - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
             if (remainingSeconds <= 0) {
                 channel.getManager().setTopic(oldTopic).queue();
-                channel.sendMessage(lecture.name + " ist zu Ende! :beer: " +
-                        channel.getJDA().getUserById(360834565490737153L).getAsMention() + " "+
-                        channel.getJDA().getUserById(159655372691341313L).getAsMention()).queue();
+                channel.sendMessage(lecture.name + " ist zu Ende! :beer:").queue();
                 break;
             }
 
             if (remainingSeconds > 5 * 60) {
                 int remainingMinutes = remainingSeconds / 60;
                 long now = System.currentTimeMillis();
-                if(now > lastUpdateTime + 5 * 60 * 1000) {
+                if (now > nextUpdateTime) {
                     int remainingHours = remainingMinutes / 60;
                     remainingMinutes %= 60;
-                    String topic = String.format("%s ist in %02d:%02d zu Ende",
-                            lecture.name, remainingHours, remainingMinutes);
+                    String topic = String.format("%s ist in %02d:%02d zu Ende", lecture.name, remainingHours, remainingMinutes);
                     System.out.println(topic);
                     channel.getManager().setTopic(topic).queue();
-                    lastUpdateTime = now;
+                    nextUpdateTime = now + 5 * 60 * 1000;
                 }
             } else if (remainingSeconds <= 10) {
-                channel.sendMessage(String.valueOf(remainingSeconds)).queue();
+                if (lastFinalCountdownBroadcast != remainingSeconds) {
+                    lastFinalCountdownBroadcast = remainingSeconds;
+                    channel.sendMessage(String.valueOf(remainingSeconds)).queue();
+                }
             }
 
             synchronized (this) {

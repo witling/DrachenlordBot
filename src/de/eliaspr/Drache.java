@@ -115,11 +115,6 @@ public class Drache extends ListenerAdapter {
                             sb.append(" - schanze").append('\n');
                             sb.append(" - exmatrikulation");
                             event.getChannel().sendMessage(sb).queue();
-                        } else if(msg.contains("test")) {
-                            System.out.println(event.getChannel().getJDA().getUserById(360834565490737153L));
-                            event.getChannel().sendMessage("Test ist zu Ende! :beer: " +
-                                    event.getChannel().getJDA().getUserById(360834565490737153L).getAsMention() + " "+
-                                    event.getChannel().getJDA().getUserById(159655372691341313L).getAsMention()).queue();
                         } else {
                             normalEtzala = true;
                         }
