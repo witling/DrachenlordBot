@@ -21,6 +21,12 @@ import java.util.*;
 
 public class Drache extends ListenerAdapter {
 
+    private static final Scheduler scheduler = new Scheduler();
+
+    public static Scheduler getScheduler() {
+        return scheduler;
+    }
+
     private static final Random random = new Random();
     private static final String[] panikEmotes = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
     private static final String[] happyEmotes = {"pepega", "yes", "pogChamp", "pog", "uzbl"};
@@ -82,25 +88,8 @@ public class Drache extends ListenerAdapter {
                                 sendRandomQuote(event);
                             }
                         } else if (msg.contains("pause")) {
-                            int pauseTime = 5;
-                            for (String w : msg.split(" ")) {
-                                int i;
-                                try {
-                                    i = Integer.parseInt(w);
-                                    pauseTime = i;
-                                    break;
-                                } catch (Exception ignored) {
-                                }
-                            }
-                            Calendar c = Calendar.getInstance();
-                            int endMinute = c.get(Calendar.MINUTE) + pauseTime;
-                            int endHour = c.get(Calendar.HOUR_OF_DAY);
-                            while (endMinute >= 60) {
-                                endMinute -= 60;
-                                endHour++;
-                            }
-                            event.getChannel().sendMessage(String.format("Pause bis %02d:%02d :beer:", endHour, endMinute)).queue();
-                        } else if (msg.contains("hilfe")) {
+                            createPauseReminder(event, msg);
+                        } else if (msg.contains("hilfe") || msg.contains("hälp") || msg.contains("help")) {
                             StringBuilder sb = new StringBuilder("**Drache-Bot**").append('\n');
                             sb.append('\n').append("*Folgende Befehle fangen immer mit `etzala` an:*").append('\n').append('\n');
                             sb.append(" - wi[e] lang[e] noch").append('\n');
@@ -108,7 +97,7 @@ public class Drache extends ListenerAdapter {
                             sb.append(" - ein[e] freiwillig[e[r]]").append('\n');
                             sb.append(" - ein zitat").append('\n');
                             sb.append(" - pause [*zeit in minuten*]").append('\n');
-                            sb.append(" - hilfe").append('\n');
+                            sb.append(" - hilfe / help / hälp").append('\n');
                             sb.append('\n').append("*Alle weiteren Befehle*").append('\n').append('\n');
                             sb.append(" - meddl / etzala").append('\n');
                             sb.append(" - foddo").append('\n');
@@ -146,13 +135,40 @@ public class Drache extends ListenerAdapter {
         }
     }
 
+    private void createPauseReminder(MessageReceivedEvent event, String msg) {
+        int pauseTime = 5;
+        for (String w : msg.split(" ")) {
+            int i;
+            try {
+                i = Integer.parseInt(w);
+                pauseTime = i;
+                break;
+            } catch (Exception ignored) {
+            }
+        }
+        Calendar c = Calendar.getInstance();
+        int endMinute = c.get(Calendar.MINUTE) + pauseTime;
+        int endHour = c.get(Calendar.HOUR_OF_DAY);
+        while (endMinute >= 60) {
+            endMinute -= 60;
+            endHour++;
+        }
+        event.getChannel().sendMessage(String.format("Pause bis %02d:%02d :beer:", endHour, endMinute)).queue();
+
+        long reminderDelay = ((pauseTime * 60L) - c.get(Calendar.SECOND));
+        getScheduler().newTask(() -> {
+            event.getChannel().sendMessage("@here etzala geht's weiter " + randomEmote(event.getGuild(), panikEmotes)).queue();
+            return true;
+        }).setName("Pause-Reminder-" + pauseTime).setStartTime(System.currentTimeMillis() + reminderDelay * 1000L).start();
+    }
+
     private void sendRandomQuote(MessageReceivedEvent event) {
         MessageChannel channel = event.getGuild().getTextChannelById(715529189486231654L);
         if (channel != null) {
             MessageHistory history = channel.getHistoryFromBeginning(100).complete();
             List<Message> msgList = history.getRetrievedHistory();
             if (!msgList.isEmpty()) {
-                Message quote = null;
+                Message quote;
                 int attempts = 0;
                 do {
                     quote = msgList.get(random.nextInt(msgList.size()));

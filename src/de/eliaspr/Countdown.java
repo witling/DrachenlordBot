@@ -6,15 +6,13 @@ import java.util.Calendar;
 
 public class Countdown implements Runnable {
 
-    static {
-
-    }
-
     private final Lecture lecture;
     private final TextChannel channel;
     private boolean shouldStop = false;
     private Runnable onCountdownEnd = () -> {
     };
+    private long nextUpdateTime = 0;
+    private int lastFinalCountdownBroadcast = -1;
 
     public Countdown(Lecture lecture, TextChannel channel) {
         this.lecture = lecture;
@@ -39,18 +37,18 @@ public class Countdown implements Runnable {
     public void run() {
         String oldTopic = channel.getTopic();
         channel.sendMessage("Countdown aktiv :thumbsup:").queue();
-        long nextUpdateTime = 0;
-        int lastFinalCountdownBroadcast = -1;
 
-        while (true) {
+        Drache.getScheduler().newTask(() -> {
             Calendar c = Calendar.getInstance();
             int dayAgeMinutes = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
             int remainingSeconds = (lecture.endTime - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
             if (remainingSeconds <= 0) {
                 channel.getManager().setTopic(oldTopic).queue();
                 channel.sendMessage(lecture.name + " ist zu Ende! :beer:").queue();
-                break;
+                return true;
             }
+
+//            System.out.println(remainingSeconds);
 
             if (remainingSeconds > 5 * 60) {
                 int remainingMinutes = remainingSeconds / 60;
@@ -72,19 +70,15 @@ public class Countdown implements Runnable {
 
             synchronized (this) {
                 if (shouldStop)
-                    break;
+                    return true;
             }
 
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                break;
+            return false;
+        }).setName("Countdown_" + lecture.name.replace(' ', '-')).after(() -> {
+            channel.getManager().setTopic(oldTopic).queue();
+            synchronized (this) {
+                onCountdownEnd.run();
             }
-        }
-
-        channel.getManager().setTopic(oldTopic).queue();
-        synchronized (this) {
-            onCountdownEnd.run();
-        }
+        }).setRepeatTime(1).start();
     }
 }
