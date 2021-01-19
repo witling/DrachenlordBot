@@ -31,6 +31,7 @@ public class Drache extends ListenerAdapter {
     private static final String[] panikEmotes = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
     private static final String[] happyEmotes = {"pepega", "yes", "pogChamp", "pog", "uzbl"};
     private static final HashMap<Long, Countdown> activeCountdowns = new HashMap<>();
+    private static boolean isPauseActive = false;
 
     private static ArrayList<String> messages = new ArrayList<>();
     private static ArrayList<File> photos = new ArrayList<>();
@@ -136,16 +137,21 @@ public class Drache extends ListenerAdapter {
     }
 
     private void createPauseReminder(MessageReceivedEvent event, String msg) {
-        int pauseTime = 5;
+        if (isPauseActive)
+            return;
+        int pauseTime = -1;
         for (String w : msg.split(" ")) {
             int i;
             try {
                 i = Integer.parseInt(w);
-                pauseTime = i;
+                if (i > 0 && i < 120)
+                    pauseTime = i;
                 break;
             } catch (Exception ignored) {
             }
         }
+        if (pauseTime <= 0)
+            return;
         Calendar c = Calendar.getInstance();
         int endMinute = c.get(Calendar.MINUTE) + pauseTime;
         int endHour = c.get(Calendar.HOUR_OF_DAY);
@@ -153,10 +159,13 @@ public class Drache extends ListenerAdapter {
             endMinute -= 60;
             endHour++;
         }
+
+        isPauseActive = true;
         event.getChannel().sendMessage(String.format("Pause bis %02d:%02d :beer:", endHour, endMinute)).queue();
 
         long reminderDelay = ((pauseTime * 60L) - c.get(Calendar.SECOND));
         getScheduler().newTask(() -> {
+            isPauseActive = false;
             event.getChannel().sendMessage("@here etzala geht's weiter " + randomEmote(event.getGuild(), panikEmotes)).queue();
             return true;
         }).setName("Pause-Reminder-" + pauseTime).setStartTime(System.currentTimeMillis() + reminderDelay * 1000L).start();
