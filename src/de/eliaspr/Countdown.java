@@ -1,5 +1,6 @@
 package de.eliaspr;
 
+import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.Calendar;
@@ -44,11 +45,17 @@ public class Countdown implements Runnable {
             int remainingSeconds = (lecture.endTime - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
             if (remainingSeconds <= 0) {
                 channel.getManager().setTopic(oldTopic).queue();
-                channel.sendMessage(lecture.name + " ist zu Ende! :beer:").queue();
+                channel.sendMessage(lecture.name + " ist zu Ende! :beer:").queue(message -> {
+                    long messageID = message.getIdLong();
+                    for(String emoteName : Drache.alcoholEmotes) {
+                        Emote emote = Drache.getServerEmote(channel.getGuild(), emoteName);
+                        if(emote != null)
+                            channel.addReactionById(messageID, emote).queue();
+                    }
+                });
+
                 return true;
             }
-
-//            System.out.println(remainingSeconds);
 
             if (remainingSeconds > 5 * 60) {
                 int remainingMinutes = remainingSeconds / 60;

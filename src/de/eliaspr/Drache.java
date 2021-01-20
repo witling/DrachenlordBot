@@ -28,8 +28,9 @@ public class Drache extends ListenerAdapter {
     }
 
     private static final Random random = new Random();
-    private static final String[] panikEmotes = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
-    private static final String[] happyEmotes = {"pepega", "yes", "pogChamp", "pog", "uzbl"};
+    public static final String[] panikEmotes = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
+    public static final String[] happyEmotes = {"pepega", "yes", "pogChamp", "pog", "uzbl"};
+    public static final String[] alcoholEmotes = {"vodka", "jaegermeister", "bier", "asbach"};
     private static final HashMap<Long, Countdown> activeCountdowns = new HashMap<>();
     private static boolean isPauseActive = false;
 
@@ -235,17 +236,23 @@ public class Drache extends ListenerAdapter {
         }
     }
 
-    private String randomEmote(Guild guild, String[] emotes) {
+    public static String randomEmote(Guild guild, String[] emotes) {
         String emoteName = emotes[random.nextInt(emotes.length)];
-        return getServerEmote(guild, emoteName);
+        return getServerEmoteAsMention(guild, emoteName);
     }
 
-    private String getServerEmote(Guild guild, String emoteName) {
+    public static String getServerEmoteAsMention(Guild guild, String emoteName) {
+        Emote emote = getServerEmote(guild, emoteName);
+        if (emote == null)
+            return "";
+        return emote.getAsMention();
+    }
+
+    public static Emote getServerEmote(Guild guild, String emoteName) {
         List<Emote> result = guild.getEmotesByName(emoteName, true);
         if (result.isEmpty())
-            return "";
-        Emote first = result.get(0);
-        return first.getAsMention();
+            return null;
+        return result.get(0);
     }
 
     public static String getWikiLink() {
