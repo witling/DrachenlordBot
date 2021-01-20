@@ -1,4 +1,4 @@
-package de.eliaspr;
+package de.eliaspr.drache;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -35,6 +35,7 @@ public class Drache extends ListenerAdapter {
     private static boolean isPauseActive = false;
 
     private static ArrayList<String> messages = new ArrayList<>();
+    private static ArrayList<String> trumpTweets = new ArrayList<>();
     private static ArrayList<File> photos = new ArrayList<>();
     private static ArrayList<File> photosNSFW = new ArrayList<>();
 
@@ -42,6 +43,9 @@ public class Drache extends ListenerAdapter {
         messages.addAll(Files.readAllLines(new File("assets/drache/questions.txt").toPath()));
         messages.addAll(Files.readAllLines(new File("assets/drache/quotes.txt").toPath()));
         System.out.println("Loaded " + messages.size() + " quoutes/questions");
+
+        trumpTweets.addAll(Files.readAllLines(new File("assets/drache/trump.txt").toPath()));
+        System.out.println("Loaded " + trumpTweets.size() + " trump tweets");
 
         photos.addAll(Arrays.asList(Objects.requireNonNull(new File("assets/drache/gifs/").listFiles())));
         photos.addAll(Arrays.asList(Objects.requireNonNull(new File("assets/drache/pics/").listFiles())));
@@ -71,6 +75,13 @@ public class Drache extends ListenerAdapter {
             if (DiscordBots.checkChannel(event.getChannel()) && !event.getAuthor().isBot()) {
                 String msg = event.getMessage().getContentRaw().toLowerCase().trim();
                 boolean etzala;
+                    System.out.println(msg);
+                if(msg.contains("\u1794") || msg.contains("\u1796") || msg.contains("\uD83C\uDDFA\uD83C\uDDF8")) {
+                    String answer = trumpTweets.get(random.nextInt(trumpTweets.size()));
+                    log(event, "Sending trump quote");
+                    event.getChannel().sendMessage("**Trump:** " + answer).queue();
+                    return;
+                }
                 if ((etzala = msg.contains("etzala")) || msg.contains("meddl")) {
                     if (etzala && event.getGuild().getIdLong() == 657602012179070988L) {
                         boolean normalEtzala = false;

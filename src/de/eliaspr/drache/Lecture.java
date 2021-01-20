@@ -1,4 +1,4 @@
-package de.eliaspr;
+package de.eliaspr.drache;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;

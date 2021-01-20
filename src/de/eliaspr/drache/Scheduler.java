@@ -1,4 +1,4 @@
-package de.eliaspr;
+package de.eliaspr.drache;
 
 import java.util.ArrayList;
 
