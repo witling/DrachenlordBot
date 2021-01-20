@@ -90,7 +90,7 @@ public class Drache extends ListenerAdapter {
                                 sendRandomQuote(event);
                             }
                         } else if (msg.contains("pause")) {
-                            createPauseReminder(event, msg);
+                            createPauseReminder(event, msg, msg.contains("mittag"));
                         } else if (msg.contains("hilfe") || msg.contains("hälp") || msg.contains("help")) {
                             StringBuilder sb = new StringBuilder("**Drache-Bot**").append('\n');
                             sb.append('\n').append("*Folgende Befehle fangen immer mit `etzala` an:*").append('\n').append('\n');
@@ -137,7 +137,7 @@ public class Drache extends ListenerAdapter {
         }
     }
 
-    private void createPauseReminder(MessageReceivedEvent event, String msg) {
+    private void createPauseReminder(MessageReceivedEvent event, String msg, boolean isLunchBreak) {
         if (isPauseActive)
             return;
         int pauseTime = -1;
@@ -165,11 +165,21 @@ public class Drache extends ListenerAdapter {
         event.getChannel().sendMessage(String.format("Pause bis %02d:%02d :beer:", endHour, endMinute)).queue();
 
         long reminderDelay = ((pauseTime * 60L) - c.get(Calendar.SECOND));
+
         getScheduler().newTask(() -> {
             isPauseActive = false;
             event.getChannel().sendMessage("@here etzala geht's weiter " + randomEmote(event.getGuild(), panikEmotes)).queue();
             return true;
         }).setName("Pause-Reminder-" + pauseTime).setStartTime(System.currentTimeMillis() + reminderDelay * 1000L).start();
+
+        if(isLunchBreak && reminderDelay > 10L * 60L) {
+            getScheduler().newTask(() -> {
+                isPauseActive = false;
+                event.getChannel().sendMessage(event.getGuild().getRoleById(657894994186731520L).getAsMention() +
+                        " in 10 Minuten gehts weiter " + randomEmote(event.getGuild(), panikEmotes)).queue();
+                return true;
+            }).setName("Lunch-Reminder-" + pauseTime).setStartTime(System.currentTimeMillis() + (reminderDelay - 10L * 60L) * 1000L).start();
+        }
     }
 
     private void sendRandomQuote(MessageReceivedEvent event) {
