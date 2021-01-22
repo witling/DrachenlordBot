@@ -75,14 +75,15 @@ public class Drache extends ListenerAdapter {
             if (DiscordBots.checkChannel(event.getChannel()) && !event.getAuthor().isBot()) {
                 String msg = event.getMessage().getContentRaw().toLowerCase().trim();
                 boolean etzala;
-                if(msg.contains("\u1794") || msg.contains("\u1796") || msg.contains("\uD83C\uDDFA\uD83C\uDDF8")) {
+                boolean isNerdServer = event.getGuild().getIdLong() == 657602012179070988L;
+                if(isNerdServer && msg.contains("\u1794") || msg.contains("\u1796") || msg.contains("\uD83C\uDDFA\uD83C\uDDF8")) {
                     String answer = trumpTweets.get(random.nextInt(trumpTweets.size()));
                     log(event, "Sending trump quote");
                     event.getChannel().sendMessage("**Trump:** " + answer).queue(message -> message.suppressEmbeds(true).queue());
                     return;
                 }
                 if ((etzala = msg.contains("etzala")) || msg.contains("meddl")) {
-                    if (etzala && event.getGuild().getIdLong() == 657602012179070988L) {
+                    if (etzala && isNerdServer) {
                         boolean normalEtzala = false;
                         if (msg.contains("wi") && msg.contains("lang") && msg.contains("noch")) {
                             sendRemainingTime(event);

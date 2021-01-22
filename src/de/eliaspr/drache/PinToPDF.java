@@ -50,7 +50,7 @@ public class PinToPDF {
                 try {
                     PDPageContentStream stream = new PDPageContentStream(document, page);
 
-                    String msgContent = msg.getContentDisplay().trim();
+                    String msgContent = msg.getContentRaw().trim();
                     boolean hasText = false;
                     if (hasText = (msgContent.length() > 0)) {
                         stream.beginText();
@@ -62,6 +62,8 @@ public class PinToPDF {
 
                     for(Message.Attachment attachment : msg.getAttachments()) {
                         if(attachment.isImage()) {
+                            String fileName = UUID.randomUUID().toString() + ".jpg";
+                            System.out.println("Downloading " + attachment.getFileName() + " from " + attachment.getProxyUrl() + " as " + fileName);
                             InputStream is = attachment.retrieveInputStream().get();
                             BufferedImage imageData;
                             try {
@@ -69,11 +71,11 @@ public class PinToPDF {
                             } finally {
                                 is.close();
                             }
-                            String fileName = UUID.randomUUID().toString() + ".jpg";
                             File imageTmp = new File(tmpFolder, fileName);
                             tempFiles.add(imageTmp);
                             ImageIO.write(imageData, "JPG", imageTmp);
-                            PDImageXObject pdfImage = PDImageXObject.createFromFile(imageTmp.getAbsolutePath(), document);
+                            Thread.sleep(200);
+                            PDImageXObject pdfImage = PDImageXObject.createFromFileByContent(imageTmp, document);
                             final int width = 500;
                             final int height = (int)(width / ((float)attachment.getWidth() / (float)attachment.getHeight()));
                             final int x = 20;
@@ -90,6 +92,7 @@ public class PinToPDF {
 
             String fileName = UUID.randomUUID().toString() + ".pdf";
             try {
+                System.out.println("Uploading generated PDF " + fileName);
                 File exportFile = new File(tmpFolder, fileName);
                 exportFile.deleteOnExit();
                 document.save(exportFile);
