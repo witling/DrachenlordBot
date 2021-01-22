@@ -8,7 +8,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="JDA" level="project" />
-    <orderEntry type="library" name="MathParser.org-mXparser-v.4.4.0-jdk11" level="project" />
     <orderEntry type="library" name="anotherJSON" level="project" />
+    <orderEntry type="library" name="pdfbox-app-2.0.22" level="project" />
   </component>
 </module>

@@ -75,7 +75,6 @@ public class Drache extends ListenerAdapter {
             if (DiscordBots.checkChannel(event.getChannel()) && !event.getAuthor().isBot()) {
                 String msg = event.getMessage().getContentRaw().toLowerCase().trim();
                 boolean etzala;
-                    System.out.println(msg);
                 if(msg.contains("\u1794") || msg.contains("\u1796") || msg.contains("\uD83C\uDDFA\uD83C\uDDF8")) {
                     String answer = trumpTweets.get(random.nextInt(trumpTweets.size()));
                     log(event, "Sending trump quote");
@@ -87,6 +86,8 @@ public class Drache extends ListenerAdapter {
                         boolean normalEtzala = false;
                         if (msg.contains("wi") && msg.contains("lang") && msg.contains("noch")) {
                             sendRemainingTime(event);
+                        } else if (msg.contains("wi") && msg.contains("schaf") && msg.contains("klausur")) {
+                            PinToPDF.createPDF(event);
                         } else if (msg.contains("mach") && msg.contains("countdown")) {
                             startCountdown(event);
                         } else if (msg.contains("ein")) {
@@ -179,7 +180,8 @@ public class Drache extends ListenerAdapter {
 
         getScheduler().newTask(() -> {
             isPauseActive = false;
-            event.getChannel().sendMessage("@here etzala geht's weiter " + randomEmote(event.getGuild(), panikEmotes)).queue();
+            Role nerdRole = event.getGuild().getRoleById(657894994186731520L);
+            event.getChannel().sendMessage(nerdRole.getAsMention() + " etzala geht's weiter " + randomEmote(event.getGuild(), panikEmotes)).queue();
             return true;
         }).setName("Pause-Reminder-" + pauseTime).setStartTime(System.currentTimeMillis() + reminderDelay * 1000L).start();
 
