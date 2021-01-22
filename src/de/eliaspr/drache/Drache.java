@@ -79,7 +79,7 @@ public class Drache extends ListenerAdapter {
                 if(msg.contains("\u1794") || msg.contains("\u1796") || msg.contains("\uD83C\uDDFA\uD83C\uDDF8")) {
                     String answer = trumpTweets.get(random.nextInt(trumpTweets.size()));
                     log(event, "Sending trump quote");
-                    event.getChannel().sendMessage("**Trump:** " + answer).queue();
+                    event.getChannel().sendMessage("**Trump:** " + answer).queue(message -> message.suppressEmbeds(true).queue());
                     return;
                 }
                 if ((etzala = msg.contains("etzala")) || msg.contains("meddl")) {
@@ -138,7 +138,7 @@ public class Drache extends ListenerAdapter {
                     log(event, "Sending \"" + picture.getPath() + "\"");
                     event.getChannel().sendFile(picture).queue();
                 } else if (msg.contains("was") && msg.contains("verpasst")) {
-                    event.getChannel().sendMessage("Du hast nix verpasst " + getServerEmote(event.getGuild(), "dhbw_logo")).queue();
+                    event.getChannel().sendMessage("Du hast nix verpasst " + getServerEmoteAsMention(event.getGuild(), "dhbw_logo")).queue();
                 } else if (msg.contains("exmatrikulation")) {
                     event.getChannel().sendMessage("https://www.mosbach.dhbw.de/service-einrichtungen/pruefungsamt/exmatrikulation/").queue();
                 }

@@ -46,6 +46,11 @@ public class Countdown implements Runnable {
             if (remainingSeconds <= 0) {
                 channel.getManager().setTopic(oldTopic).queue();
                 channel.sendMessage(lecture.name + " ist zu Ende! :beer:").queue(message -> {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     long messageID = message.getIdLong();
                     for(String emoteName : Drache.alcoholEmotes) {
                         Emote emote = Drache.getServerEmote(channel.getGuild(), emoteName);
