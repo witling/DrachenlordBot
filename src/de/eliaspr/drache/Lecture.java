@@ -33,7 +33,7 @@ public class Lecture {
         Calendar c = Calendar.getInstance();
         ArrayList<Lecture> list = new ArrayList<>();
         for (TextChannel channel : guild.getTextChannelsByName("ankündigungen", true)) {
-            for (Message message : channel.getHistoryAround(channel.getLatestMessageId(), 10).complete().getRetrievedHistory()) {
+            for (Message message : channel.getHistoryAround(channel.getLatestMessageId(), 100).complete().getRetrievedHistory()) {
                 String textMsg = message.getContentRaw();
                 if (textMsg.contains("Stundenplan für morgen")) {
                     String date = textMsg.substring(0, 8);
