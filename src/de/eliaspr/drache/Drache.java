@@ -153,22 +153,51 @@ public class Drache extends ListenerAdapter {
     private void createPauseReminder(MessageReceivedEvent event, String msg, boolean isLunchBreak) {
         if (isPauseActive)
             return;
-        int pauseTime = -1;
-        for (String w : msg.split(" ")) {
-            int i;
-            try {
-                i = Integer.parseInt(w);
-                if (i > 0 && i < 120)
-                    pauseTime = i;
-                break;
-            } catch (Exception ignored) {
-            }
-        }
-        if (pauseTime <= 0)
-            return;
         Calendar c = Calendar.getInstance();
-        int endMinute = c.get(Calendar.MINUTE) + pauseTime;
-        int endHour = c.get(Calendar.HOUR_OF_DAY);
+
+        int pauseTime, endMinute, endHour;
+        if(msg.contains("bis")) {
+            int i = msg.indexOf("bis");
+            msg = msg.substring(i + 3).trim();
+            if(msg.isEmpty())
+                return;
+            msg = msg.replace(" ", "").replace("\t", "").replace("\n", "");
+            String[] spl = msg.split(":");
+            if(spl.length < 2)
+                return;
+            try {
+                endHour = Integer.parseInt(spl[0]);
+                endMinute = Integer.parseInt(spl[1]);
+            } catch (NumberFormatException e) {
+                return;
+            }
+            endHour = endHour % 24;
+            endMinute = endMinute % 60;
+            int nowHour = c.get(Calendar.HOUR_OF_DAY);
+            int nowMinute = c.get(Calendar.MINUTE);
+            if(endHour < nowHour || (endHour == nowHour && endMinute < nowMinute))
+                return;
+
+            int pauseEndTimestamp = endHour * 60 + endMinute;
+            int nowTimestamp = nowHour * 60 + nowMinute;
+            pauseTime = pauseEndTimestamp - nowTimestamp;
+        } else {
+            pauseTime = -1;
+            for (String w : msg.split(" ")) {
+                int i;
+                try {
+                    i = Integer.parseInt(w);
+                    if (i > 0 && i < 120)
+                        pauseTime = i;
+                    break;
+                } catch (Exception ignored) {
+                }
+            }
+            if (pauseTime <= 0)
+                return;
+            endMinute = c.get(Calendar.MINUTE) + pauseTime;
+            endHour = c.get(Calendar.HOUR_OF_DAY);
+        }
         while (endMinute >= 60) {
             endMinute -= 60;
             endHour++;
