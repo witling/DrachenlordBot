@@ -111,7 +111,8 @@ public class Drache extends ListenerAdapter {
                             sb.append(" - mach countdown").append('\n');
                             sb.append(" - ein[e] freiwillig[e[r]]").append('\n');
                             sb.append(" - ein zitat").append('\n');
-                            sb.append(" - pause [*zeit in minuten*]").append('\n');
+                            sb.append(" - pause <zeit in minuten>").append('\n');
+                            sb.append(" - pause bis <hh>:<mm>").append('\n');
                             sb.append(" - hilfe / help / hälp").append('\n');
                             sb.append('\n').append("*Alle weiteren Befehle*").append('\n').append('\n');
                             sb.append(" - meddl / etzala").append('\n');
@@ -139,10 +140,26 @@ public class Drache extends ListenerAdapter {
                     File picture = photosNSFW.get(random.nextInt(photosNSFW.size()));
                     log(event, "Sending \"" + picture.getPath() + "\"");
                     event.getChannel().sendFile(picture).queue();
-                } else if (msg.contains("was") && msg.contains("verpasst")) {
+                } else if (isNerdServer && msg.contains("was") && msg.contains("verpasst")) {
                     event.getChannel().sendMessage("Du hast nix verpasst " + getServerEmoteAsMention(event.getGuild(), "dhbw_logo")).queue();
-                } else if (msg.contains("exmatrikulation")) {
+                } else if (isNerdServer && msg.contains("exmatrikulation")) {
                     event.getChannel().sendMessage("https://www.mosbach.dhbw.de/service-einrichtungen/pruefungsamt/exmatrikulation/").queue();
+                } else if (isNerdServer && (msg.contains("bachelor") || msg.contains("abgabe") || msg.contains("abgeben") || msg.contains("arbeit"))) {
+                    Calendar c = Calendar.getInstance();
+                    c.set(2022, Calendar.SEPTEMBER, 9, 12, 0, 0);
+                    long timeUntilMS = c.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
+                    long timeUntilSec = timeUntilMS / 1000;
+                    long days = timeUntilSec / 86400;
+                    timeUntilSec %= 86400;
+                    long hours = timeUntilSec / 3600;
+                    timeUntilSec %= 3600;
+                    long minutes = timeUntilSec / 60;
+                    long seconds = timeUntilSec % 60;
+                    String responseMessage = String.format("Noch %d Tage und %02d:%02d:%02d bis zur Abgabe der Bachelorarbeit %s %s",
+                            days, hours, minutes, seconds,
+                            getServerEmoteAsMention(event.getGuild(), "dhbw_logo"),
+                            randomEmote(event.getGuild(), panikEmotes));
+                    event.getChannel().sendMessage(responseMessage).queue();
                 }
             }
         } catch (Exception e) {
