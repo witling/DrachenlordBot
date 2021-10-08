@@ -10,16 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/jsoup_1_14_3.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/runConfigurations.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/jsoup-1.14.3.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/RaplaParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EH_DiscordBots.iml" beforeDir="false" afterPath="$PROJECT_DIR$/EH_DiscordBots.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Countdown.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/Countdown.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/DiscordBots.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/DiscordBots.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/export/DiscordBots.jar" beforeDir="false" afterPath="$PROJECT_DIR$/export/DiscordBots.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Lecture.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -157,8 +149,16 @@
       <workItem from="1614089333332" duration="826000" />
       <workItem from="1631547333932" duration="1463000" />
       <workItem from="1633605776692" duration="719000" />
-      <workItem from="1633682219903" duration="7187000" />
+      <workItem from="1633682219903" duration="7516000" />
     </task>
+    <task id="LOCAL-00001" summary="added timetable parsing from Rapla and new timetable commands">
+      <created>1633689544497</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1633689544497</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -166,5 +166,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="added timetable parsing from Rapla and new timetable commands" />
+    <option name="LAST_COMMIT_MESSAGE" value="added timetable parsing from Rapla and new timetable commands" />
   </component>
 </project>

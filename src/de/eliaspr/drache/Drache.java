@@ -151,7 +151,7 @@ public class Drache extends ListenerAdapter {
 
                                 event.getChannel().sendMessage(sb.toString()).queue();
                             }
-                        } else if (msg.contains("was") || msg.contains("stundenplan") || msg.contains("vorlesung")) {
+                        } else if (msg.contains("stundenplan") || msg.contains("vorlesung")) {
                             if (msg.contains("morgen")) {
                                 showCalendar(event.getChannel(), event.getGuild(), false, null);
                             } else {
