@@ -34,6 +34,7 @@ public class Drache extends ListenerAdapter {
     public static final String[] alcoholEmotes = {"vodka", "jaegermeister", "bier", "asbach"};
     private static final HashMap<Long, Countdown> activeCountdowns = new HashMap<>();
     private static boolean isPauseActive = false;
+    private static long bachelorCooldown = 0;
 
     private static ArrayList<String> messages = new ArrayList<>();
     private static ArrayList<String> trumpTweets = new ArrayList<>();
@@ -210,6 +211,14 @@ public class Drache extends ListenerAdapter {
                 } else if (isNerdServer && msg.contains("exmatrikulation")) {
                     event.getChannel().sendMessage("https://www.mosbach.dhbw.de/service-einrichtungen/pruefungsamt/exmatrikulation/").queue();
                 } else if (isNerdServer && (msg.contains("bachelor") || msg.contains("abgabe") || msg.contains("abgeben") || msg.contains("arbeit"))) {
+                    boolean checkCooldown = msg.contains("abgabe") || msg.contains("abgeben") || msg.contains("arbeit");
+                    if(checkCooldown) {
+                        long now = System.currentTimeMillis();
+                        if(now < bachelorCooldown)
+                            return;
+                        bachelorCooldown = now + 15 * 60 * 1000;
+                    }
+
                     Calendar c = Calendar.getInstance();
                     c.set(2022, Calendar.SEPTEMBER, 9, 12, 0, 0);
                     long timeUntilMS = c.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
