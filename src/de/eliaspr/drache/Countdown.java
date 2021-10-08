@@ -7,7 +7,7 @@ import java.util.Calendar;
 
 public class Countdown implements Runnable {
 
-    private final Lecture lecture;
+    private final RaplaParser.CalendarEntry lecture;
     private final TextChannel channel;
     private boolean shouldStop = false;
     private Runnable onCountdownEnd = () -> {
@@ -15,7 +15,7 @@ public class Countdown implements Runnable {
     private long nextUpdateTime = 0;
     private int lastFinalCountdownBroadcast = -1;
 
-    public Countdown(Lecture lecture, TextChannel channel) {
+    public Countdown(RaplaParser.CalendarEntry lecture, TextChannel channel) {
         this.lecture = lecture;
         this.channel = channel;
     }
@@ -42,7 +42,7 @@ public class Countdown implements Runnable {
         Drache.getScheduler().newTask(() -> {
             Calendar c = Calendar.getInstance();
             int dayAgeMinutes = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
-            int remainingSeconds = (lecture.endTime - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
+            int remainingSeconds = (lecture.endTimeMinutes() - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
             if (remainingSeconds <= 0) {
                 channel.getManager().setTopic(oldTopic).queue();
                 channel.sendMessage(lecture.name + " ist zu Ende! :beer:").queue(message -> {

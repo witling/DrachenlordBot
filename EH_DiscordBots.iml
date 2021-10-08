@@ -10,5 +10,6 @@
     <orderEntry type="library" name="JDA" level="project" />
     <orderEntry type="library" name="anotherJSON" level="project" />
     <orderEntry type="library" name="pdfbox-app-2.0.22" level="project" />
+    <orderEntry type="library" name="jsoup-1.14.3" level="project" />
   </component>
 </module>

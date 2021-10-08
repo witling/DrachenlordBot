@@ -28,6 +28,7 @@ public class Drache extends ListenerAdapter {
     }
 
     private static final Random random = new Random();
+    public static final HashMap<String, String> personEmotes = new HashMap<>();
     public static final String[] panikEmotes = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
     public static final String[] happyEmotes = {"pepega", "yes", "pogChamp", "pog", "uzbl"};
     public static final String[] alcoholEmotes = {"vodka", "jaegermeister", "bier", "asbach"};
@@ -54,15 +55,42 @@ public class Drache extends ListenerAdapter {
         photosNSFW.addAll(Arrays.asList(Objects.requireNonNull(new File("assets/drache/nsfw/").listFiles())));
         System.out.println("Found " + photosNSFW.size() + " nsfw gifs/pictures");
 
-        String apiKey = new BufferedReader(new FileReader(new File("apikey.txt"))).readLine();
+        personEmotes.put("müller", "carstenPilot");
+        personEmotes.put("zang", "christina");
+        personEmotes.put("becker", "marvin");
+        personEmotes.put("kim", "kim");
+
+        String apiKey = new BufferedReader(new FileReader("apikey.txt")).readLine();
         JDABuilder builder = JDABuilder.createDefault(apiKey);
         builder.setActivity(Activity.playing("sich am Speer"));
         builder.setCompression(Compression.NONE);
 
-        builder.addEventListeners(new Drache());
+        Drache drache = new Drache();
+        builder.addEventListeners(drache);
         builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         JDA jda = builder.build();
         jda.awaitReady();
+
+        drache.startTimetableSender(jda);
+
+    }
+
+    private void startTimetableSender(JDA jda) {
+        Timer timer = new Timer("DailyTimetable");
+        long now = Calendar.getInstance().getTimeInMillis();
+        Calendar firstStart = Calendar.getInstance();
+        firstStart.set(Calendar.HOUR_OF_DAY, 18);
+        firstStart.set(Calendar.MINUTE, 0);
+        firstStart.set(Calendar.SECOND, 0);
+        long delay = firstStart.getTimeInMillis() - now;
+        System.out.printf("Starting timetable sender in %,d ms\n", delay);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("Performing daily timetable sending");
+                showCalendar(jda.getTextChannelById(706825779664912385L), jda.getGuildById(657602012179070988L), true, null);
+            }
+        }, delay, 1000L * 60L * 60L * 24L);
     }
 
     private void log(MessageReceivedEvent event, String info) {
@@ -73,10 +101,11 @@ public class Drache extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         try {
             if (DiscordBots.checkChannel(event.getChannel()) && !event.getAuthor().isBot()) {
+                System.out.println(event.getGuild().getIdLong());
                 String msg = event.getMessage().getContentRaw().toLowerCase().trim();
                 boolean etzala;
                 boolean isNerdServer = event.getGuild().getIdLong() == 657602012179070988L;
-                if(isNerdServer && msg.contains("\u1794") || msg.contains("\u1796") || msg.contains("\uD83C\uDDFA\uD83C\uDDF8")) {
+                if (isNerdServer && msg.contains("\u1794") || msg.contains("\u1796") || msg.contains("\uD83C\uDDFA\uD83C\uDDF8")) {
                     String answer = trumpTweets.get(random.nextInt(trumpTweets.size()));
                     log(event, "Sending trump quote");
                     event.getChannel().sendMessage("**Trump:** " + answer).queue(message -> message.suppressEmbeds(true).queue());
@@ -101,6 +130,42 @@ public class Drache extends ListenerAdapter {
                                 });
                             } else if (msg.contains("zitat")) {
                                 sendRandomQuote(event);
+                            }
+                        } else if ((msg.contains("nächst") || msg.contains("nachst") || msg.contains("naechst")) && (msg.contains("vorlesung") || msg.contains("klausur") || msg.contains("veranstaltung"))) {
+                            RaplaParser.CalendarEntry nextEvent = RaplaParser.getNextEvent();
+                            if (nextEvent == null) {
+                                event.getChannel().sendMessage("Es stehen keine Vorlesungen an " + getServerEmoteAsMention(event.getGuild(), "croco")).queue();
+                            } else {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append("Nächste Vorlesung ").append(getServerEmoteAsMention(event.getGuild(), "dhbw_logo")).append("\n");
+                                sb.append("**").append(nextEvent.startDay()).append(" | ").append(nextEvent.startTime()).append(" - ").append(nextEvent.endTime()).append("**\n");
+                                sb.append("**").append(nextEvent.name).append("**\n");
+                                // if (nextEvent.type != null) sb.append("*").append(nextEvent.type).append("*\n");
+
+                                boolean showSeparator = nextEvent.lecturers != null && nextEvent.locations != null;
+                                if (nextEvent.locations != null) sb.append(String.join(", ", nextEvent.locations));
+                                if (showSeparator) sb.append(" | ");
+                                if (nextEvent.lecturers != null)
+                                    formatEventLecturers(sb, event.getGuild(), nextEvent.lecturers);
+
+                                event.getChannel().sendMessage(sb.toString()).queue();
+                            }
+                        } else if (msg.contains("was") || msg.contains("stundenplan") || msg.contains("vorlesung")) {
+                            if (msg.contains("morgen")) {
+                                showCalendar(event.getChannel(), event.getGuild(), false, null);
+                            } else {
+                                for (String e : msg.split(" ")) {
+                                    if (!e.contains("."))
+                                        continue;
+                                    int n = 0;
+                                    for (char c : e.toCharArray())
+                                        if (c == '.')
+                                            n++;
+                                    if (n == 2) {
+                                        showCalendar(event.getChannel(), event.getGuild(), false, e);
+                                        break;
+                                    }
+                                }
                             }
                         } else if (msg.contains("pause")) {
                             createPauseReminder(event, msg, msg.contains("mittag"));
@@ -167,20 +232,86 @@ public class Drache extends ListenerAdapter {
         }
     }
 
+    private void showCalendar(MessageChannel channel, Guild guild, boolean skipIfEmpty, String selectedDate) {
+        int day = 0, month = 0, year = 0;
+        List<RaplaParser.CalendarEntry> entries;
+        if (selectedDate == null)
+            entries = RaplaParser.getEntriesForTomorrow();
+        else {
+            try {
+                String[] spl = selectedDate.split("\\.");
+                day = Integer.parseInt(spl[0]);
+                month = Integer.parseInt(spl[1]) - 1;
+                year = Integer.parseInt(spl[2]);
+                if (day < 0 || day > 31 || month < 0 || month >= 12)
+                    return;
+                if (year < 100)
+                    year += 2000;
+                entries = RaplaParser.getEntriesForDate(year, month, day);
+            } catch (NumberFormatException e) {
+                return;
+            }
+        }
+
+        if (entries.isEmpty() && skipIfEmpty)
+            return;
+        StringBuilder sb = new StringBuilder();
+
+        if (selectedDate == null) {
+            Calendar today = Calendar.getInstance();
+            today.add(Calendar.HOUR, 24);
+            sb.append("**Stundenplan für morgen, ").append(RaplaParser.CalendarEntry.dateFormatDayOnly.format(today.getTime())).append(" :clipboard:**\n\n");
+        } else {
+            sb.append("**Stundenplan für ").append(String.format("%02d.%02d.%04d", day, month + 1, year)).append(" :clipboard:**\n\n");
+        }
+
+        if (entries.isEmpty()) {
+            sb.append("*Morgen stehen keine Termine an*");
+        } else {
+            for (RaplaParser.CalendarEntry event : entries) {
+                sb.append(event.startTime()).append(" - ").append(event.endTime());
+                sb.append(" | ").append(event.name);
+                if (event.locations != null || event.lecturers != null) {
+                    sb.append("\n");
+                    boolean both = event.locations != null && event.lecturers != null;
+                    if (event.lecturers != null) formatEventLecturers(sb, guild, event.lecturers);
+                    if (both) sb.append(" | ");
+                    if (event.locations != null) sb.append(String.join(", ", event.locations));
+                }
+                sb.append("\n\n");
+            }
+        }
+
+        channel.sendMessage(sb.toString()).queue();
+    }
+
+    private void formatEventLecturers(StringBuilder sb, Guild guild, String[] lecturers) {
+        for (int i = 0; i < lecturers.length; i++) {
+            String emote = personEmotes.get(lecturers[i].toLowerCase().trim());
+            if (emote == null)
+                sb.append(lecturers[i]).append(" ").append(getServerEmoteAsMention(guild, "jensFaehler"));
+            else
+                sb.append(getServerEmoteAsMention(guild, emote));
+
+            if (i < lecturers.length - 1)
+                sb.append(", ");
+        }
+    }
+
     private void createPauseReminder(MessageReceivedEvent event, String msg, boolean isLunchBreak) {
         if (isPauseActive)
             return;
         Calendar c = Calendar.getInstance();
 
         int pauseTime, endMinute, endHour;
-        if(msg.contains("bis")) {
+        if (msg.contains("bis")) {
             int i = msg.indexOf("bis");
             msg = msg.substring(i + 3).trim();
-            if(msg.isEmpty())
+            if (msg.isEmpty())
                 return;
             msg = msg.replace(" ", "").replace("\t", "").replace("\n", "");
             String[] spl = msg.split(":");
-            if(spl.length < 2)
+            if (spl.length < 2)
                 return;
             try {
                 endHour = Integer.parseInt(spl[0]);
@@ -192,7 +323,7 @@ public class Drache extends ListenerAdapter {
             endMinute = endMinute % 60;
             int nowHour = c.get(Calendar.HOUR_OF_DAY);
             int nowMinute = c.get(Calendar.MINUTE);
-            if(endHour < nowHour || (endHour == nowHour && endMinute < nowMinute))
+            if (endHour < nowHour || (endHour == nowHour && endMinute < nowMinute))
                 return;
 
             int pauseEndTimestamp = endHour * 60 + endMinute;
@@ -232,7 +363,7 @@ public class Drache extends ListenerAdapter {
             return true;
         }).setName("Pause-Reminder-" + pauseTime).setStartTime(System.currentTimeMillis() + reminderDelay * 1000L).start();
 
-        if(isLunchBreak && reminderDelay > 10L * 60L) {
+        if (isLunchBreak && reminderDelay > 10L * 60L) {
             getScheduler().newTask(() -> {
                 isPauseActive = false;
                 event.getChannel().sendMessage(event.getGuild().getRoleById(657894994186731520L).getAsMention() +
@@ -259,7 +390,7 @@ public class Drache extends ListenerAdapter {
     }
 
     private void startCountdown(MessageReceivedEvent event) {
-        final Lecture currentLecture = Lecture.getCurrentLecture(event.getGuild());
+        RaplaParser.CalendarEntry currentLecture = RaplaParser.getCurrentEvent();
         if (currentLecture != null) {
             TextChannel channel = event.getTextChannel();
             long channelId = channel.getIdLong();
@@ -287,9 +418,9 @@ public class Drache extends ListenerAdapter {
     private void sendRemainingTime(MessageReceivedEvent event) {
         Calendar c = Calendar.getInstance();
         int dayAgeMinutes = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
-        Lecture lecture = Lecture.getCurrentLecture(event.getGuild());
+        RaplaParser.CalendarEntry lecture = RaplaParser.getCurrentEvent();
         if (lecture != null) {
-            int remainingSecnds = (lecture.endTime - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
+            int remainingSecnds = (lecture.endTimeMinutes() - dayAgeMinutes) * 60 - c.get(Calendar.SECOND);
             log(event, "Sending remaining time of " + lecture.name);
             int remainingMinutes = remainingSecnds / 60;
             remainingSecnds %= 60;

@@ -5,10 +5,21 @@
       <artifact name="Main Output" />
     </artifacts-to-build>
   </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/jsoup_1_14_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/runConfigurations.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/jsoup-1.14.3.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/RaplaParser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EH_DiscordBots.iml" beforeDir="false" afterPath="$PROJECT_DIR$/EH_DiscordBots.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Countdown.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/Countdown.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/DiscordBots.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/DiscordBots.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Lecture.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +36,14 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
   <component name="ProjectId" id="1d7y8nmsvku06F7TT8yIcfjAJ6T" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -40,11 +59,23 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/pdfbox-app-2.0.22.jar" />
+    <property name="com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File" value="JAVA&#10;HTML" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/jsoup-1.14.3.jar" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Git\DrachenlordBot\lib" />
+    </key>
   </component>
   <component name="RunManager" selected="Application.DiscordBots">
     <configuration name="DiscordBots" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -124,7 +155,9 @@
       <workItem from="1611675904760" duration="665000" />
       <workItem from="1613047328252" duration="732000" />
       <workItem from="1614089333332" duration="826000" />
-      <workItem from="1631547333932" duration="862000" />
+      <workItem from="1631547333932" duration="1463000" />
+      <workItem from="1633605776692" duration="719000" />
+      <workItem from="1633682219903" duration="7187000" />
     </task>
     <servers />
   </component>
