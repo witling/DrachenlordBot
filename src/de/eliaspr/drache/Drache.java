@@ -103,7 +103,6 @@ public class Drache extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         try {
             if (DiscordBots.checkChannel(event.getChannel()) && !event.getAuthor().isBot()) {
-                System.out.println(event.getGuild().getIdLong());
                 String msg = event.getMessage().getContentRaw().toLowerCase().trim();
                 boolean etzala;
                 boolean isNerdServer = event.getGuild().getIdLong() == 657602012179070988L;
@@ -145,10 +144,10 @@ public class Drache extends ListenerAdapter {
                                 // if (nextEvent.type != null) sb.append("*").append(nextEvent.type).append("*\n");
 
                                 boolean showSeparator = nextEvent.lecturers != null && nextEvent.locations != null;
-                                if (nextEvent.locations != null) sb.append(String.join(", ", nextEvent.locations));
-                                if (showSeparator) sb.append(" | ");
                                 if (nextEvent.lecturers != null)
                                     formatEventLecturers(sb, event.getGuild(), nextEvent.lecturers);
+                                if (showSeparator) sb.append(" | ");
+                                if (nextEvent.locations != null) sb.append(String.join(", ", nextEvent.locations));
 
                                 event.getChannel().sendMessage(sb.toString()).queue();
                             }
@@ -276,7 +275,10 @@ public class Drache extends ListenerAdapter {
         }
 
         if (entries.isEmpty()) {
-            sb.append("*Morgen stehen keine Termine an*");
+            if(selectedDate == null)
+                sb.append("*Morgen stehen keine Termine an*");
+            else
+                sb.append("*Am ").append(String.format("%02d.%02d.%04d", day, month + 1, year)).append(" stehen keine Termine an*");
         } else {
             for (RaplaParser.CalendarEntry event : entries) {
                 sb.append(event.startTime()).append(" - ").append(event.endTime());
