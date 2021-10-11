@@ -9,7 +9,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="" />
+    <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -147,6 +150,7 @@
       <workItem from="1631547333932" duration="1463000" />
       <workItem from="1633605776692" duration="719000" />
       <workItem from="1633682219903" duration="7756000" />
+      <workItem from="1633968041238" duration="169000" />
     </task>
     <task id="LOCAL-00001" summary="added timetable parsing from Rapla and new timetable commands">
       <created>1633689544497</created>
@@ -173,5 +177,16 @@
     <MESSAGE value="added timetable parsing from Rapla and new timetable commands" />
     <MESSAGE value="minor change and re-build" />
     <option name="LAST_COMMIT_MESSAGE" value="minor change and re-build" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java</url>
+          <line>283</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

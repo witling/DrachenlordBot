@@ -73,7 +73,6 @@ public class Drache extends ListenerAdapter {
         jda.awaitReady();
 
         drache.startTimetableSender(jda);
-
     }
 
     private void startTimetableSender(JDA jda) {
@@ -84,6 +83,8 @@ public class Drache extends ListenerAdapter {
         firstStart.set(Calendar.MINUTE, 0);
         firstStart.set(Calendar.SECOND, 0);
         long delay = firstStart.getTimeInMillis() - now;
+        if(delay < 0L)
+            delay += 1000L * 60L * 60L * 24L;
         System.out.printf("Starting timetable sender in %,d ms\n", delay);
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
