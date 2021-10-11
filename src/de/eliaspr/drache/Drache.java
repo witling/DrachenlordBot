@@ -216,7 +216,7 @@ public class Drache extends ListenerAdapter {
                         long now = System.currentTimeMillis();
                         if(now < bachelorCooldown)
                             return;
-                        bachelorCooldown = now + 15 * 60 * 1000;
+                        bachelorCooldown = now + 45 * 60 * 1000;
                     }
 
                     Calendar c = Calendar.getInstance();
@@ -234,6 +234,8 @@ public class Drache extends ListenerAdapter {
                             getServerEmoteAsMention(event.getGuild(), "dhbw_logo"),
                             randomEmote(event.getGuild(), panikEmotes));
                     event.getChannel().sendMessage(responseMessage).queue();
+                } else if (msg.contains("audi") || msg.contains("skrrr")) {
+                    event.getChannel().sendMessage("https://www.youtube.com/watch?v=E0SN614t2WI").queue();
                 }
             }
         } catch (Exception e) {

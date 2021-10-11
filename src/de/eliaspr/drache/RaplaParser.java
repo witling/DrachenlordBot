@@ -56,13 +56,13 @@ public class RaplaParser {
     public static List<CalendarEntry> parseRaplaCalendar(boolean onlyFutureEvents) {
         List<CalendarEntry> entries = new ArrayList<>();
         Date now = Calendar.getInstance().getTime();
+        System.out.println("Parsing calendar");
         try {
             Document doc = Jsoup.connect(CALENDAR_URL).get();
             Elements tooltips = doc.select(".tooltip");
             for (Element tooltip : tooltips) {
                 Date startDate = null, endDate = null;
-                String type = null, name = null;
-                String[] lecturers = null, locations = null;
+                String type = null, name = null, examType = null;
 
                 for (Element ch : tooltip.children()) {
                     if (ch.tagName().equalsIgnoreCase("div") &&
@@ -76,22 +76,27 @@ public class RaplaParser {
                     } else if (ch.tagName().equalsIgnoreCase("strong")) {
                         type = ch.text();
                     } else if (ch.tagName().equalsIgnoreCase("table") && ch.hasClass("infotable")) {
-                        for (Element tr : ch.children()) {
+                        for (Element tr : ch.getElementsByTag("tr")) {
                             String label = tr.select(".label").get(0).ownText().trim();
-                            if (label.equals("Veranstaltungsname:")) {
-                                name = tr.select(".value").get(0).ownText().trim();
-                                break;
+                            String value = tr.select(".value").get(0).ownText().trim();
+                            if (label.equals("Veranstaltungsname:") || label.equals("Name:")) {
+                                name = value;
+                            } else if (label.equals("Prüfungsart:") && value.length() > 0) {
+                                examType = value;
                             }
                         }
                     }
                 }
 
+                if (name != null && examType != null)
+                    name = examType + " " + name;
+
                 Element weekBlock = tooltip.parent();
                 if (weekBlock == null || (weekBlock = weekBlock.parent()) == null)
                     continue;
 
-                lecturers = weekBlock.select(".person").stream().map(Element::ownText).toArray(String[]::new);
-                locations = weekBlock.select(".resource").stream().map(Element::ownText).filter(str -> !str.contains("MGH-TINF")).toArray(String[]::new);
+                String[] lecturers = weekBlock.select(".person").stream().map(Element::ownText).toArray(String[]::new);
+                String[] locations = weekBlock.select(".resource").stream().map(Element::ownText).filter(str -> !str.contains("MGH-TINF")).toArray(String[]::new);
 
                 if (startDate != null && endDate != null && name != null) {
                     if (onlyFutureEvents && startDate.before(now))
@@ -133,8 +138,8 @@ public class RaplaParser {
             this.endDate = endDate;
             this.type = type;
             this.name = name;
-            this.lecturers = lecturers;
-            this.locations = locations;
+            this.lecturers = lecturers != null && lecturers.length > 0 ? lecturers : null;
+            this.locations = locations != null && locations.length > 0 ? locations : null;
         }
 
         public static final DateFormat dateFormatFull = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
