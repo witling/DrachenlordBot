@@ -11,8 +11,8 @@
   <component name="ChangeListManager">
     <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="fixed issue with RaplaParser">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Countdown.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/Countdown.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/RaplaParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/RaplaParser.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,6 +152,7 @@
       <workItem from="1633605776692" duration="719000" />
       <workItem from="1633682219903" duration="7756000" />
       <workItem from="1633968041238" duration="1543000" />
+      <workItem from="1634125451334" duration="165000" />
     </task>
     <task id="LOCAL-00001" summary="added timetable parsing from Rapla and new timetable commands">
       <created>1633689544497</created>

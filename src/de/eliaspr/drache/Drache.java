@@ -28,10 +28,15 @@ public class Drache extends ListenerAdapter {
     }
 
     private static final Random random = new Random();
+
+    public static Random getRandom() {
+        return random;
+    }
+
     public static final HashMap<String, String> personEmotes = new HashMap<>();
     public static final String[] panikEmotes = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
     public static final String[] happyEmotes = {"pepega", "yes", "pogChamp", "pog", "uzbl"};
-    public static final String[] alcoholEmotes = {"vodka", "jaegermeister", "bier", "asbach"};
+    public static final String[] alcoholEmotes = {"vodka", "jaegermeister", "bier"};
     private static final HashMap<Long, Countdown> activeCountdowns = new HashMap<>();
     private static boolean isPauseActive = false;
     private static long bachelorCooldown = 0;
@@ -60,6 +65,7 @@ public class Drache extends ListenerAdapter {
         personEmotes.put("zang", "christina");
         personEmotes.put("becker", "marvin");
         personEmotes.put("kim", "kim");
+        personEmotes.put("steur", "niko");
 
         String apiKey = new BufferedReader(new FileReader("apikey.txt")).readLine();
         JDABuilder builder = JDABuilder.createDefault(apiKey);
