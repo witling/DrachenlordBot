@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Drache extends ListenerAdapter {
@@ -89,7 +91,7 @@ public class Drache extends ListenerAdapter {
         firstStart.set(Calendar.MINUTE, 0);
         firstStart.set(Calendar.SECOND, 0);
         long delay = firstStart.getTimeInMillis() - now;
-        if(delay < 0L)
+        if (delay < 0L)
             delay += 1000L * 60L * 60L * 24L;
         System.out.printf("Starting timetable sender in %,d ms\n", delay);
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -125,6 +127,8 @@ public class Drache extends ListenerAdapter {
                             sendRemainingTime(event);
                         } else if (msg.contains("wi") && msg.contains("schaf") && msg.contains("klausur")) {
                             PinToPDF.createPDF(event);
+                        } else if (msg.contains("wi") && msg.contains("viel") && (msg.contains("termin") || msg.contains("vorlesung")) && (msg.contains("präsenz") || msg.contains("praesenz") || (msg.contains("vor") && msg.contains("ort")))) {
+                            showNumberOfRemainingDates(event.getChannel(), event.getGuild());
                         } else if (msg.contains("mach") && msg.contains("countdown")) {
                             startCountdown(event);
                         } else if (msg.contains("ein")) {
@@ -218,9 +222,9 @@ public class Drache extends ListenerAdapter {
                     event.getChannel().sendMessage("https://www.mosbach.dhbw.de/service-einrichtungen/pruefungsamt/exmatrikulation/").queue();
                 } else if (isNerdServer && (msg.contains("bachelor") || msg.contains("abgabe") || msg.contains("abgeben") || msg.contains("arbeit"))) {
                     boolean checkCooldown = msg.contains("abgabe") || msg.contains("abgeben") || msg.contains("arbeit");
-                    if(checkCooldown) {
+                    if (checkCooldown) {
                         long now = System.currentTimeMillis();
-                        if(now < bachelorCooldown)
+                        if (now < bachelorCooldown)
                             return;
                         bachelorCooldown = now + 45 * 60 * 1000;
                     }
@@ -247,6 +251,30 @@ public class Drache extends ListenerAdapter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void showNumberOfRemainingDates(MessageChannel channel, Guild guild) {
+        List<RaplaParser.CalendarEntry> entries = RaplaParser.parseRaplaCalendar(true);
+        entries.sort(Comparator.comparing(entry -> entry.startDate));
+        int n = 0;
+        int lastDay = -1;
+        DateFormat df = new SimpleDateFormat("dd");
+        for (RaplaParser.CalendarEntry e : entries) {
+            if (e.locations != null) {
+                if (Arrays.stream(e.locations).noneMatch(l -> l.contains("Lehrsaal")))
+                    continue;
+                int day = Integer.parseInt(df.format(e.startDate));
+                if (day == lastDay)
+                    continue;
+                lastDay = day;
+                System.out.println(e);
+                n++;
+            }
+        }
+        if (n == 0)
+            channel.sendMessage("Es sind aktuell keine Präsenz-Vorlesungen/Klausuren geplant " + randomEmote(guild, happyEmotes)).queue();
+        else
+            channel.sendMessage("Es sind noch " + n + " Präsenz-Vorlesungen/Klausuren " + randomEmote(guild, panikEmotes)).queue();
     }
 
     private void showCalendar(MessageChannel channel, Guild guild, boolean skipIfEmpty, String selectedDate) {
@@ -283,7 +311,7 @@ public class Drache extends ListenerAdapter {
         }
 
         if (entries.isEmpty()) {
-            if(selectedDate == null)
+            if (selectedDate == null)
                 sb.append("*Morgen stehen keine Termine an*");
             else
                 sb.append("*Am ").append(String.format("%02d.%02d.%04d", day, month + 1, year)).append(" stehen keine Termine an*");

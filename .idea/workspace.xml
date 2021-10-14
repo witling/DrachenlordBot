@@ -9,9 +9,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="fixed issue with RaplaParser">
+    <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Countdown.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/Countdown.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/DiscordBots.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/DiscordBots.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -53,7 +53,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File" value="JAVA&#10;HTML" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/jsoup-1.14.3.jar" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/export" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -67,7 +67,12 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Git\DrachenlordBot\export" />
+      <recent name="C:\Git\DrachenlordBot\assets" />
       <recent name="C:\Git\DrachenlordBot\lib" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Git\DrachenlordBot\assets\drache" />
     </key>
   </component>
   <component name="RunManager" selected="Application.DiscordBots">
@@ -152,7 +157,8 @@
       <workItem from="1633605776692" duration="719000" />
       <workItem from="1633682219903" duration="7756000" />
       <workItem from="1633968041238" duration="1543000" />
-      <workItem from="1634125451334" duration="165000" />
+      <workItem from="1634125451334" duration="380000" />
+      <workItem from="1634197618328" duration="1140000" />
     </task>
     <task id="LOCAL-00001" summary="added timetable parsing from Rapla and new timetable commands">
       <created>1633689544497</created>
@@ -182,7 +188,14 @@
       <option name="project" value="LOCAL" />
       <updated>1633968661142</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="fixed alcohol emote after countdown and added Steur emote">
+      <created>1634125726300</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1634125726300</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -194,6 +207,7 @@
     <MESSAGE value="minor change and re-build" />
     <MESSAGE value="fixed negative delay bug" />
     <MESSAGE value="fixed issues with timetable commands" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed issues with timetable commands" />
+    <MESSAGE value="fixed alcohol emote after countdown and added Steur emote" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed alcohol emote after countdown and added Steur emote" />
   </component>
 </project>
