@@ -68,6 +68,7 @@ public class Drache extends ListenerAdapter {
         personEmotes.put("becker", "marvin");
         personEmotes.put("kim", "kim");
         personEmotes.put("steur", "niko");
+        personEmotes.put("graupner", "georg");
 
         String apiKey = new BufferedReader(new FileReader("apikey.txt")).readLine();
         JDABuilder builder = JDABuilder.createDefault(apiKey);
