@@ -69,6 +69,7 @@ public class Drache extends ListenerAdapter {
         personEmotes.put("kim", "kim");
         personEmotes.put("steur", "niko");
         personEmotes.put("graupner", "georg");
+        personEmotes.put("höfling", "juergen");
 
         String apiKey = new BufferedReader(new FileReader("apikey.txt")).readLine();
         JDABuilder builder = JDABuilder.createDefault(apiKey);
@@ -88,7 +89,7 @@ public class Drache extends ListenerAdapter {
         Timer timer = new Timer("DailyTimetable");
         long now = Calendar.getInstance().getTimeInMillis();
         Calendar firstStart = Calendar.getInstance();
-        firstStart.set(Calendar.HOUR_OF_DAY, 18);
+        firstStart.set(Calendar.HOUR_OF_DAY, 16);
         firstStart.set(Calendar.MINUTE, 0);
         firstStart.set(Calendar.SECOND, 0);
         long delay = firstStart.getTimeInMillis() - now;
@@ -173,7 +174,7 @@ public class Drache extends ListenerAdapter {
                                     for (char c : e.toCharArray())
                                         if (c == '.')
                                             n++;
-                                    if (n == 2) {
+                                    if (n >= 1) {
                                         showCalendar(event.getChannel(), event.getGuild(), false, e);
                                         break;
                                     }
@@ -288,7 +289,7 @@ public class Drache extends ListenerAdapter {
                 String[] spl = selectedDate.split("\\.");
                 day = Integer.parseInt(spl[0]);
                 month = Integer.parseInt(spl[1]) - 1;
-                year = Integer.parseInt(spl[2]);
+                year = spl.length >= 3 ? Integer.parseInt(spl[2]) : Calendar.getInstance().get(Calendar.YEAR);
                 if (day < 0 || day > 31 || month < 0 || month >= 12)
                     return;
                 if (year < 100)
