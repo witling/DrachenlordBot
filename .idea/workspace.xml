@@ -9,9 +9,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="">
+    <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="re-built Drachen bot .jar">
+      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONArray.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONBinaryReader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONBinaryWriter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONSyntaxException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONValue.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONValueType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONWriter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/DiscordBots.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/DiscordBots.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/RaplaParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/RaplaParser.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,6 +50,9 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="1d7y8nmsvku06F7TT8yIcfjAJ6T" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -51,7 +68,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File" value="JAVA&#10;HTML" />
+    <property name="com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File" value="JSON&#10;JAVA&#10;HTML" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/export" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -159,7 +176,11 @@
       <workItem from="1634125451334" duration="380000" />
       <workItem from="1634197618328" duration="1140000" />
       <workItem from="1634635566464" duration="74000" />
-      <workItem from="1636446454949" duration="1132000" />
+      <workItem from="1636446454949" duration="1306000" />
+      <workItem from="1637165230426" duration="61000" />
+      <workItem from="1638211862404" duration="1620000" />
+      <workItem from="1639325563060" duration="689000" />
+      <workItem from="1647895577008" duration="1817000" />
     </task>
     <task id="LOCAL-00001" summary="added timetable parsing from Rapla and new timetable commands">
       <created>1633689544497</created>
@@ -196,11 +217,36 @@
       <option name="project" value="LOCAL" />
       <updated>1634125726300</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="added Hoefling emote and changed daily timetable broadcast to 16:00">
+      <created>1636447623496</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1636447623496</updated>
+    </task>
+    <task id="LOCAL-00007" summary="re-built Drachen bot .jar">
+      <created>1636447736081</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1636447736081</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
@@ -209,6 +255,8 @@
     <MESSAGE value="fixed negative delay bug" />
     <MESSAGE value="fixed issues with timetable commands" />
     <MESSAGE value="fixed alcohol emote after countdown and added Steur emote" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed alcohol emote after countdown and added Steur emote" />
+    <MESSAGE value="added Hoefling emote and changed daily timetable broadcast to 16:00" />
+    <MESSAGE value="re-built Drachen bot .jar" />
+    <option name="LAST_COMMIT_MESSAGE" value="re-built Drachen bot .jar" />
   </component>
 </project>

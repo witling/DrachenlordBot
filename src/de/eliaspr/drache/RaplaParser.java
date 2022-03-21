@@ -1,11 +1,15 @@
 package de.eliaspr.drache;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import de.eliaspr.json.JSONObject;
+import de.eliaspr.json.JSONParser;
+import de.eliaspr.json.JSONValue;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,77 +59,50 @@ public class RaplaParser {
 
     public static List<CalendarEntry> parseRaplaCalendar(boolean onlyFutureEvents) {
         List<CalendarEntry> entries = new ArrayList<>();
-        Date now = Calendar.getInstance().getTime();
-        System.out.println("Parsing calendar");
+
         try {
-            Document doc = Jsoup.connect(CALENDAR_URL).get();
-            Elements tooltips = doc.select(".tooltip");
-            for (Element tooltip : tooltips) {
-                Date startDate = null, endDate = null;
-                String type = null, name = null, examType = null;
+            URL url = new URL("https://api.vorlesungsplan.lars-rickert.de/lectures/MGH-TINF19");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            int status = con.getResponseCode();
+            if (status == 200) {
+                JSONParser parser = new JSONParser();
 
-                for (Element ch : tooltip.children()) {
-                    if (ch.tagName().equalsIgnoreCase("div") &&
-                            !ch.hasAttr("style")) {
-                        String dateInfo = ch.text();
-                        String[] el = dateInfo.split(" ");
-                        String[] dayMonthYear = el[1].split("\\.");
-                        String[] times = el[2].split("-");
-                        startDate = convertToDate(dayMonthYear, times[0]);
-                        endDate = convertToDate(dayMonthYear, times[1]);
-                    } else if (ch.tagName().equalsIgnoreCase("strong")) {
-                        type = ch.text();
-                    } else if (ch.tagName().equalsIgnoreCase("table") && ch.hasClass("infotable")) {
-                        for (Element tr : ch.getElementsByTag("tr")) {
-                            String label = tr.select(".label").get(0).ownText().trim();
-                            String value = tr.select(".value").get(0).ownText().trim();
-                            if (label.equals("Veranstaltungsname:") || label.equals("Name:")) {
-                                name = value;
-                            } else if (label.equals("Prüfungsart:") && value.length() > 0) {
-                                examType = value;
-                            }
-                        }
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuilder content = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    content.append(inputLine);
+                }
+
+                JSONValue json = parser.parseJSON(content.toString(), true);
+                DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+                json.getArray().forEach().action(entry -> {
+                    JSONObject obj = entry.getObject();
+                    try {
+                        entries.add(new CalendarEntry(
+                                df1.parse(obj.getString("start")),
+                                df1.parse(obj.getString("end")),
+                                obj.getBoolean("isExam") ? "Klausur" : obj.getString("type"),
+                                obj.getString("name"),
+                                new String[]{obj.getString("lecturer")},
+                                obj.getArray("rooms").stream().map(JSONValue::toString).toArray(String[]::new)
+                        ));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
-                }
-
-                if (name != null && examType != null)
-                    name = examType + " " + name;
-
-                Element weekBlock = tooltip.parent();
-                if (weekBlock == null || (weekBlock = weekBlock.parent()) == null)
-                    continue;
-
-                String[] lecturers = weekBlock.select(".person").stream().map(Element::ownText).toArray(String[]::new);
-                String[] locations = weekBlock.select(".resource").stream().map(Element::ownText).filter(str -> !str.contains("MGH-TINF")).toArray(String[]::new);
-
-                if (startDate != null && endDate != null && name != null) {
-                    if (onlyFutureEvents && startDate.before(now))
-                        continue;
-                    entries.add(new CalendarEntry(startDate, endDate, type, name, lecturers, locations));
-                }
+                }).run();
+            } else {
+                throw new Exception("HTTP status " + status);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Failed to parse Rapla calendar");
+            System.err.println("Failed to fetch/parse calender from StuV");
         }
+
         return entries;
     }
 
-    private static Date convertToDate(String[] dayMonthYear, String time) {
-        String[] timeEl = time.split(":");
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"));
-        int year = Integer.parseInt(dayMonthYear[2]);
-        if (year < 100)
-            year += 2000;
-        //noinspection MagicConstant
-        c.set(year,
-                Integer.parseInt(dayMonthYear[1]) - 1,
-                Integer.parseInt(dayMonthYear[0]),
-                Integer.parseInt(timeEl[0]),
-                Integer.parseInt(timeEl[1]),
-                0);
-        return c.getTime();
-    }
 
     public static class CalendarEntry {
 

@@ -5,11 +5,6 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 
 public class DiscordBots {
 

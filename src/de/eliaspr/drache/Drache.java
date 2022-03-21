@@ -151,8 +151,8 @@ public class Drache extends ListenerAdapter {
                             } else {
                                 StringBuilder sb = new StringBuilder();
                                 sb.append("Nächste Vorlesung ").append(getServerEmoteAsMention(event.getGuild(), "dhbw_logo")).append("\n");
-                                sb.append("**").append(nextEvent.startDay()).append(" | ").append(nextEvent.startTime()).append(" - ").append(nextEvent.endTime()).append("**\n");
-                                sb.append("**").append(nextEvent.name).append("**\n");
+                                sb.append(nextEvent.startDay()).append(" | ").append(nextEvent.startTime()).append(" - ").append(nextEvent.endTime()).append("\n");
+                                sb.append(nextEvent.name).append("\n");
                                 // if (nextEvent.type != null) sb.append("*").append(nextEvent.type).append("*\n");
 
                                 boolean showSeparator = nextEvent.lecturers != null && nextEvent.locations != null;
