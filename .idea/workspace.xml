@@ -9,23 +9,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="re-built Drachen bot .jar">
-      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONArray.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONBinaryReader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONBinaryWriter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONObject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONParser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONSyntaxException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONValue.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONValueType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/de/eliaspr/json/JSONWriter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
+    <list default="true" id="bdb7b6e4-7c61-4a94-8c16-f0fa7d6711ef" name="Default Changelist" comment="use new API for vorlesungsplan">
+      <change afterPath="$PROJECT_DIR$/export.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/export/DiscordBots.jar" beforeDir="false" afterPath="$PROJECT_DIR$/export/DiscordBots.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/DiscordBots.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/DiscordBots.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/Drache.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/de/eliaspr/drache/RaplaParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/eliaspr/drache/RaplaParser.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -180,7 +169,9 @@
       <workItem from="1637165230426" duration="61000" />
       <workItem from="1638211862404" duration="1620000" />
       <workItem from="1639325563060" duration="689000" />
-      <workItem from="1647895577008" duration="1817000" />
+      <workItem from="1647895577008" duration="3045000" />
+      <workItem from="1647944159014" duration="2879000" />
+      <workItem from="1648194992564" duration="1219000" />
     </task>
     <task id="LOCAL-00001" summary="added timetable parsing from Rapla and new timetable commands">
       <created>1633689544497</created>
@@ -231,7 +222,14 @@
       <option name="project" value="LOCAL" />
       <updated>1636447736081</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="use new API for vorlesungsplan">
+      <created>1647897441765</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1647897441765</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -257,6 +255,7 @@
     <MESSAGE value="fixed alcohol emote after countdown and added Steur emote" />
     <MESSAGE value="added Hoefling emote and changed daily timetable broadcast to 16:00" />
     <MESSAGE value="re-built Drachen bot .jar" />
-    <option name="LAST_COMMIT_MESSAGE" value="re-built Drachen bot .jar" />
+    <MESSAGE value="use new API for vorlesungsplan" />
+    <option name="LAST_COMMIT_MESSAGE" value="use new API for vorlesungsplan" />
   </component>
 </project>

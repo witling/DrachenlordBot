@@ -127,6 +127,9 @@ public class Drache extends ListenerAdapter {
                         boolean normalEtzala = false;
                         if (msg.contains("wi") && msg.contains("lang") && msg.contains("noch")) {
                             sendRemainingTime(event);
+                        } else if (msg.contains("wi") && msg.contains("spät")) {
+                            SimpleDateFormat format = new SimpleDateFormat();
+                            event.getChannel().sendMessage(format.format(new Date())).queue();
                         } else if (msg.contains("wi") && msg.contains("schaf") && msg.contains("klausur")) {
                             PinToPDF.createPDF(event);
                         } else if (msg.contains("wi") && msg.contains("viel") && (msg.contains("termin") || msg.contains("vorlesung")) && (msg.contains("präsenz") || msg.contains("praesenz") || (msg.contains("vor") && msg.contains("ort")))) {
