@@ -1,0 +1,3 @@
+Ein Fach hat 32 Fächer mit je fünf Boxen.
+Ein Knopf hat die Zustände A) aktiv, B) inaktiv und C) Error.
+Betätigt ein Arbeiter den Knopf wechselt er in den Zustand aktiv.
