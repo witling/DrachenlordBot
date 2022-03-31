@@ -63,7 +63,7 @@ public class MarkovChain {
 
 	public static void main(String[] args) throws Exception {
 		Path assetFile = Paths.get(System.getProperty("user.dir")).resolve("assets/aufgaben.txt");
-		MarkovChain chain = MarkovChain.buildFromFile(assetFile, 2);
+		MarkovChain chain = MarkovChain.buildFromFile(assetFile, 3);
 		System.out.println(chain.generateWords(50));
 	}
 }

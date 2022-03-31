@@ -1,7 +1,9 @@
 package de.eliaspr.tools;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -19,18 +21,22 @@ public class MarkovChainTransitions {
 	public void populateFromText(String rawText) {
 		String[] tokens = rawText.split(" ");
 		List<String> insertingState = new ArrayList<>(this.chainOrder);
+		Iterator<String> tokenIterator = Arrays.stream(tokens).iterator();
 
-		for (String token : tokens) {
+		for (int i = 0; i < this.chainOrder && tokenIterator.hasNext(); i++) {
+			insertingState.add(tokenIterator.next());
+		}
+
+		while (tokenIterator.hasNext()) {
+			String token = tokenIterator.next();
 			if (token.isBlank()) {
 				continue;
 			}
 
-			if (this.chainOrder < insertingState.size() + 1) {
-				insertingState.remove(0);
-			}
-
-			insertingState.add(token);
 			this.addTransition(insertingState, token);
+
+			insertingState.remove(0);
+			insertingState.add(token);
 		}
 	}
 

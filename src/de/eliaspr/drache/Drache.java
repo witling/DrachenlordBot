@@ -493,7 +493,8 @@ public class Drache extends ListenerAdapter {
 		Path assetFile = Paths.get(System.getProperty("user.dir")).resolve("assets/aufgaben.txt");
 		MarkovChain chain = MarkovChain.buildFromFile(assetFile, 3);
 		String aufgabe = chain.generateWords(50);
-		event.getChannel().sendMessage(aufgabe).queue();
+		String message = String.format(":carstenPilot:\n ```%s```", aufgabe);
+		event.getChannel().sendMessage(message).queue();
 	}
 
 	private void startCountdown(MessageReceivedEvent event) {
