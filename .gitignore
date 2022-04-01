@@ -1,4 +1,5 @@
 out/
+.idea/
 
 # Drachenlord assets are added to gitignore to prevent copyright infrigment
 export/assets/*
