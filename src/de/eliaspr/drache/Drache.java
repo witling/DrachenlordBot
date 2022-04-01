@@ -15,7 +15,6 @@ import de.eliaspr.tools.MarkovChain;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -161,7 +160,7 @@ public class Drache extends ListenerAdapter {
 							} else if (msg.contains("zitat")) {
 								sendRandomQuote(event);
 							} else if (msg.contains("aufgab")) {
-								sendRandomAufgabe(event);
+								sendRandomAufgabe(event.getGuild(), event);
 							}
 						} else if ((msg.contains("nächst") || msg.contains("nachst") || msg.contains("naechst"))
 								&& (msg.contains("vorlesung") || msg.contains("klausur")
@@ -489,11 +488,14 @@ public class Drache extends ListenerAdapter {
 		}
 	}
 
-	private void sendRandomAufgabe(MessageReceivedEvent event) throws Exception {
+	private void sendRandomAufgabe(Guild guild, MessageReceivedEvent event) throws Exception {
 		Path assetFile = Paths.get(System.getProperty("user.dir")).resolve("assets/aufgaben.txt");
 		MarkovChain chain = MarkovChain.buildFromFile(assetFile, 3);
 		String aufgabe = chain.generateWords(50);
-		String message = String.format(":carstenPilot:\n ```%s```", aufgabe);
+		aufgabe = aufgabe.replace(" ,", ",");
+		aufgabe = aufgabe.replace(" .", ".");
+		aufgabe = Character.toUpperCase(aufgabe.charAt(0)) + aufgabe.substring(1);
+		String message = String.format(getServerEmoteAsMention(guild, "carstenPilot") + " `%s`", aufgabe);
 		event.getChannel().sendMessage(message).queue();
 	}
 
