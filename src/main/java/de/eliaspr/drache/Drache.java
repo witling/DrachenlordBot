@@ -15,8 +15,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -432,6 +430,8 @@ public class Drache extends ListenerAdapter {
         String aufgabe = chain.generateWords(length);
         aufgabe = aufgabe.replace(" ,", ",");
         aufgabe = aufgabe.replace(" .", ".");
+        while (aufgabe.charAt(0) == '.' || aufgabe.charAt(0) == ',')
+            aufgabe = aufgabe.substring(1);
         aufgabe = Character.toUpperCase(aufgabe.charAt(0)) + aufgabe.substring(1);
         int lastDot = aufgabe.lastIndexOf('.');
         if (lastDot != -1) aufgabe = aufgabe.substring(0, lastDot + 1);
