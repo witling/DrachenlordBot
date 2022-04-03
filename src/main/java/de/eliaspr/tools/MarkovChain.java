@@ -46,7 +46,7 @@ public class MarkovChain {
 
 			// if there still is no successor state -> just exit
 			if (successor == null) {
-				throw new Exception("F�hler. Markov Kette han 1 Problem khat");
+				throw new Exception("Fähler. Markov Kette han 1 Problem khat");
 			}
 
 			output.append(successor);

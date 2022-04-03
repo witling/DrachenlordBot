@@ -14,6 +14,9 @@ public class DiscordBots {
     }
 
     public static void main(String[] args) throws LoginException, InterruptedException, IOException {
+        System.out.println("Setting encoding (thanks @witling <3)");
+        System.setProperty("file.encoding", "utf-8");
+
         System.out.println("Setting time zone");
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
 

@@ -66,13 +66,13 @@ public class Drache extends ListenerAdapter {
         photosNSFW.addAll(Arrays.asList(Objects.requireNonNull(new File("assets/drache/nsfw/").listFiles())));
         System.out.println("Found " + photosNSFW.size() + " nsfw gifs/pictures");
 
-        personEmotes.put("m¸ller", "carstenPilot");
+        personEmotes.put("m√ºller", "carstenPilot");
         personEmotes.put("zang", "christina");
         personEmotes.put("becker", "marvin");
         personEmotes.put("kim", "kim");
         personEmotes.put("steur", "niko");
         personEmotes.put("graupner", "georg");
-        personEmotes.put("hˆfling", "juergen");
+        personEmotes.put("h√∂fling", "juergen");
 
         String apiKey = new BufferedReader(new FileReader("assets/apikey.txt")).readLine();
         JDABuilder builder = JDABuilder.createDefault(apiKey);
@@ -129,12 +129,12 @@ public class Drache extends ListenerAdapter {
                         boolean normalEtzala = false;
                         if (msg.contains("wi") && msg.contains("lang") && msg.contains("noch")) {
                             sendRemainingTime(event);
-                        } else if (msg.contains("wi") && msg.contains("sp‰t")) {
+                        } else if (msg.contains("wi") && msg.contains("sp√§t")) {
                             SimpleDateFormat format = new SimpleDateFormat();
                             event.getChannel().sendMessage(format.format(new Date())).queue();
                         } else if (msg.contains("wi") && msg.contains("schaf") && msg.contains("klausur")) {
                             PinToPDF.createPDF(event);
-                        } else if (msg.contains("wi") && msg.contains("viel") && (msg.contains("termin") || msg.contains("vorlesung")) && (msg.contains("pr‰senz") || msg.contains("praesenz") || (msg.contains("vor") && msg.contains("ort")))) {
+                        } else if (msg.contains("wi") && msg.contains("viel") && (msg.contains("termin") || msg.contains("vorlesung")) && (msg.contains("pr√§senz") || msg.contains("praesenz") || (msg.contains("vor") && msg.contains("ort")))) {
                             showNumberOfRemainingDates(event.getChannel(), event.getGuild());
                         } else if (msg.contains("mach") && msg.contains("countdown")) {
                             startCountdown(event);
@@ -144,20 +144,20 @@ public class Drache extends ListenerAdapter {
                                 Guild guild = event.getJDA().getGuildById(657602012179070988L);
                                 guild.findMembers(member -> member.getRoles().contains(nerdRole)).onSuccess(list -> {
                                     Member member = list.get(random.nextInt(list.size()));
-                                    event.getChannel().sendMessage("Der Lord der Drachen hat " + member.getAsMention() + " auserw‰hlt").queue();
+                                    event.getChannel().sendMessage("Der Lord der Drachen hat " + member.getAsMention() + " auserw√§hlt").queue();
                                 });
                             } else if (msg.contains("zitat")) {
                                 sendRandomQuote(event);
                             } else if (msg.contains("aufgab")) {
                                 sendRandomAufgabe(event.getGuild(), event);
                             }
-                        } else if ((msg.contains("n‰chst") || msg.contains("nachst") || msg.contains("naechst")) && (msg.contains("vorlesung") || msg.contains("klausur") || msg.contains("veranstaltung"))) {
+                        } else if ((msg.contains("n√§chst") || msg.contains("nachst") || msg.contains("naechst")) && (msg.contains("vorlesung") || msg.contains("klausur") || msg.contains("veranstaltung"))) {
                             RaplaParser.CalendarEntry nextEvent = RaplaParser.getNextEvent();
                             if (nextEvent == null) {
                                 event.getChannel().sendMessage("Es stehen keine Vorlesungen an " + getServerEmoteAsMention(event.getGuild(), "croco")).queue();
                             } else {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append("N‰chste Vorlesung ").append(getServerEmoteAsMention(event.getGuild(), "dhbw_logo")).append("\n");
+                                sb.append("N√§chste Vorlesung ").append(getServerEmoteAsMention(event.getGuild(), "dhbw_logo")).append("\n");
                                 sb.append(nextEvent.startDay()).append(" | ").append(nextEvent.startTime()).append(" - ").append(nextEvent.endTime()).append("\n");
                                 sb.append(nextEvent.name).append("\n");
                                 // if (nextEvent.type != null)
@@ -188,7 +188,7 @@ public class Drache extends ListenerAdapter {
                             }
                         } else if (msg.contains("pause")) {
                             createPauseReminder(event, msg, msg.contains("mittag"));
-                        } else if (msg.contains("hilfe") || msg.contains("h‰lp") || msg.contains("help")) {
+                        } else if (msg.contains("hilfe") || msg.contains("h√§lp") || msg.contains("help")) {
                             StringBuilder sb = new StringBuilder("**Drache-Bot**").append('\n');
                             sb.append('\n').append("*Folgende Befehle fangen immer mit `etzala` an:*").append('\n').append('\n');
                             sb.append(" - wi[e] lang[e] noch").append('\n');
@@ -198,7 +198,7 @@ public class Drache extends ListenerAdapter {
                             sb.append(" - ein zitat").append('\n');
                             sb.append(" - pause <zeit in minuten>").append('\n');
                             sb.append(" - pause bis <hh>:<mm>").append('\n');
-                            sb.append(" - hilfe / help / h‰lp").append('\n');
+                            sb.append(" - hilfe / help / h√§lp").append('\n');
                             sb.append('\n').append("*Alle weiteren Befehle*").append('\n').append('\n');
                             sb.append(" - meddl / etzala").append('\n');
                             sb.append(" - foddo").append('\n');
@@ -274,9 +274,9 @@ public class Drache extends ListenerAdapter {
             }
         }
         if (n == 0)
-            channel.sendMessage("Es sind aktuell keine Pr‰senz-Vorlesungen/Klausuren geplant " + randomEmote(guild, happyEmotes)).queue();
+            channel.sendMessage("Es sind aktuell keine Pr√§senz-Vorlesungen/Klausuren geplant " + randomEmote(guild, happyEmotes)).queue();
         else
-            channel.sendMessage("Es sind noch " + n + " Pr‰senz-Vorlesungen/Klausuren " + randomEmote(guild, panikEmotes)).queue();
+            channel.sendMessage("Es sind noch " + n + " Pr√§senz-Vorlesungen/Klausuren " + randomEmote(guild, panikEmotes)).queue();
     }
 
     private void showCalendar(MessageChannel channel, Guild guild, boolean skipIfEmpty, String selectedDate) {
@@ -303,9 +303,9 @@ public class Drache extends ListenerAdapter {
         if (selectedDate == null) {
             Calendar today = Calendar.getInstance();
             today.add(Calendar.HOUR, 24);
-            sb.append("**Stundenplan f¸r morgen, ").append(RaplaParser.CalendarEntry.dateFormatDayOnly.format(today.getTime())).append(" :clipboard:**\n\n");
+            sb.append("**Stundenplan f√ºr morgen, ").append(RaplaParser.CalendarEntry.dateFormatDayOnly.format(today.getTime())).append(" :clipboard:**\n\n");
         } else {
-            sb.append("**Stundenplan f¸r ").append(String.format("%02d.%02d.%04d", day, month + 1, year)).append(" :clipboard:**\n\n");
+            sb.append("**Stundenplan f√ºr ").append(String.format("%02d.%02d.%04d", day, month + 1, year)).append(" :clipboard:**\n\n");
         }
 
         if (entries.isEmpty()) {
@@ -461,7 +461,7 @@ public class Drache extends ListenerAdapter {
                 countdown.createThread().start();
             }
         } else {
-            event.getChannel().sendMessage("Gerade l‰uft keine Vorlesung").queue();
+            event.getChannel().sendMessage("Gerade l√§uft keine Vorlesung").queue();
         }
     }
 
@@ -479,7 +479,7 @@ public class Drache extends ListenerAdapter {
             remainingMinutes %= 60;
             event.getChannel().sendMessage(String.format("%s dauert noch %02d:%02d:%02d %s", lecture.name, remainingHours, remainingMinutes, remainingSecnds, rem > 30 ? randomEmote(event.getGuild(), panikEmotes) : rem < 5 ? randomEmote(event.getGuild(), happyEmotes) : "")).queue();
         } else {
-            event.getChannel().sendMessage("Gerade l‰uft keine Vorlesung").queue();
+            event.getChannel().sendMessage("Gerade l√§uft keine Vorlesung").queue();
         }
     }
 
