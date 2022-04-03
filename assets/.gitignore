@@ -1,2 +1,4 @@
-# Drachenlord assets are added to gitignore to prevent copyright infrigment
-drache/*
+apikey.txt
+drache/gifs
+drache/nsfw
+drache/pics

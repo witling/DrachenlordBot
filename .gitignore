@@ -1,7 +1,17 @@
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
 out/
-.idea/
+!**/src/main/**/out/
+!**/src/test/**/out/
 
-# Drachenlord assets are added to gitignore to prevent copyright infrigment
-export/assets/*
-
-export/apikey.txt
+### VS Code ###
+.vscode/
