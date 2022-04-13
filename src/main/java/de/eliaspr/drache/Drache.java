@@ -49,6 +49,7 @@ public class Drache extends ListenerAdapter {
     private static ArrayList<String> trumpTweets = new ArrayList<>();
     private static ArrayList<File> photos = new ArrayList<>();
     private static ArrayList<File> photosNSFW = new ArrayList<>();
+    private static List<Message> quoteCache;
 
     public static void startDracheBot() throws LoginException, InterruptedException, IOException {
         messages.addAll(Files.readAllLines(new File("assets/drache/questions.txt").toPath()));
@@ -98,14 +99,25 @@ public class Drache extends ListenerAdapter {
         firstStart.set(Calendar.SECOND, 0);
         long delay = firstStart.getTimeInMillis() - now;
         if (delay < 0L) delay += 1000L * 60L * 60L * 24L;
+
         System.out.printf("Starting timetable sender in %,d ms\n", delay);
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("Performing daily timetable sending");
-                showCalendar(jda.getTextChannelById(706825779664912385L), jda.getGuildById(657602012179070988L), true, null);
+                System.out.println("Performing daily timetable sending and zitat retrieving");
+                Guild nerdsGuild = jda.getGuildById(657602012179070988L);
+                if (nerdsGuild != null) {
+                    loadQuotes(nerdsGuild);
+                    showCalendar(jda.getTextChannelById(706825779664912385L), nerdsGuild, true, null);
+                }
             }
         }, delay, 1000L * 60L * 60L * 24L);
+
+        System.out.println("Loading quotes for the first time");
+        Guild nerdsGuild = jda.getGuildById(657602012179070988L);
+        if (nerdsGuild != null) {
+            loadQuotes(nerdsGuild);
+        }
     }
 
     private void log(MessageReceivedEvent event, String info) {
@@ -415,19 +427,22 @@ public class Drache extends ListenerAdapter {
         }
     }
 
-    private void sendRandomQuote(MessageReceivedEvent event) {
-        MessageChannel channel = event.getGuild().getTextChannelById(715529189486231654L);
+    private void loadQuotes(Guild guild) {
+        MessageChannel channel = guild.getTextChannelById(715529189486231654L);
         if (channel != null) {
-            MessageHistory history = channel.getHistoryFromBeginning(100).complete();
-            List<Message> msgList = history.getRetrievedHistory();
-            if (!msgList.isEmpty()) {
-                Message quote;
-                int attempts = 0;
-                do {
-                    quote = msgList.get(random.nextInt(msgList.size()));
-                } while (quote.getContentRaw().isEmpty() && (++attempts) < 100);
-                event.getChannel().sendMessage(quote).queue();
-            }
+            quoteCache = channel.getIterableHistory().stream().toList();
+            System.out.println("Fetched " + quoteCache.size() + " quotes from #zitate");
+        }
+    }
+
+    private void sendRandomQuote(MessageReceivedEvent event) {
+        if (!quoteCache.isEmpty()) {
+            Message quote;
+            int attempts = 0;
+            do {
+                quote = quoteCache.get(random.nextInt(quoteCache.size()));
+            } while (quote.getContentRaw().isEmpty() && (++attempts) < 100);
+            event.getChannel().sendMessage(quote).queue();
         }
     }
 
