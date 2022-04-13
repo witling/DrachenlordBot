@@ -1,0 +1,4 @@
+#!/bin/bash
+git pull
+./gradlew shadowJar
+java -jar build/libs/DrachenlordBot-1.0-SNAPSHOT-all.jar
