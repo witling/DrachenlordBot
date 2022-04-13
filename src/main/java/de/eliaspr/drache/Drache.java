@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,7 +37,7 @@ public class Drache extends ListenerAdapter {
         return random;
     }
 
-    public static final HashMap<String, String> personEmotes = new HashMap<>();
+    public static final HashMap<String, String> lectureEmotes = new HashMap<>();
     public static final String[] panikEmotes = {"pepeMinigun", "pepeShotgun", "pepeSteckdose", "pepeHands", "pepeGalgen", "panik", "noose"};
     public static final String[] happyEmotes = {"pepega", "yes", "pogChamp", "pog", "uzbl"};
     public static final String[] alcoholEmotes = {"vodka", "jaegermeister", "bier"};
@@ -64,13 +65,15 @@ public class Drache extends ListenerAdapter {
         photosNSFW.addAll(Arrays.asList(Objects.requireNonNull(new File("assets/drache/nsfw/").listFiles())));
         System.out.println("Found " + photosNSFW.size() + " nsfw gifs/pictures");
 
-        personEmotes.put("müller", "carstenPilot");
-        personEmotes.put("zang", "christina");
-        personEmotes.put("becker", "marvin");
-        personEmotes.put("kim", "kim");
-        personEmotes.put("steur", "niko");
-        personEmotes.put("graupner", "georg");
-        personEmotes.put("höfling", "juergen");
+        lectureEmotes.put("Advanced Software Engineering", "carstenPilot;joerg");
+        lectureEmotes.put("Digitale Bildverarbeitung", "tommyF");
+        lectureEmotes.put("Grundlagen der Künstlichen Intelligenz", "carstenPilot");
+        lectureEmotes.put("Computergraphik", "norbert");
+        lectureEmotes.put("Architekturen von Businesssystemen", "despair");
+        lectureEmotes.put("Selbststudium", "bier;uzbl");
+        lectureEmotes.put("Softwarequalität", "propellerKatrin");
+        lectureEmotes.put("C# und .NET", "carstenPilot");
+        lectureEmotes.put("Verteilte Systeme", "joerg;croc");
 
         String apiKey = new BufferedReader(new FileReader("assets/apikey.txt")).readLine();
         JDABuilder builder = JDABuilder.createDefault(apiKey);
@@ -158,14 +161,11 @@ public class Drache extends ListenerAdapter {
                                 sb.append("Nächste Vorlesung ").append(getServerEmoteAsMention(event.getGuild(), "dhbw_logo")).append("\n");
                                 sb.append(nextEvent.startDay()).append(" | ").append(nextEvent.startTime()).append(" - ").append(nextEvent.endTime()).append("\n");
                                 sb.append(nextEvent.name).append("\n");
-                                // if (nextEvent.type != null)
-                                // sb.append("*").append(nextEvent.type).append("*\n");
-
-                                boolean showSeparator = nextEvent.lecturers != null && nextEvent.locations != null;
-                                if (nextEvent.lecturers != null)
-                                    formatEventLecturers(sb, event.getGuild(), nextEvent.lecturers);
-                                if (showSeparator) sb.append(" | ");
-                                if (nextEvent.locations != null) sb.append(String.join(", ", nextEvent.locations));
+                                appendEmotes(sb, event.getGuild(), nextEvent.name);
+                                if (nextEvent.locations != null) {
+                                    sb.append(" | ");
+                                    sb.append(String.join(", ", nextEvent.locations));
+                                }
 
                                 event.getChannel().sendMessage(sb.toString()).queue();
                             }
@@ -314,12 +314,11 @@ public class Drache extends ListenerAdapter {
             for (RaplaParser.CalendarEntry event : entries) {
                 sb.append(event.startTime()).append(" - ").append(event.endTime());
                 sb.append(" | ").append(event.name);
-                if (event.locations != null || event.lecturers != null) {
-                    sb.append("\n");
-                    boolean both = event.locations != null && event.lecturers != null;
-                    if (event.lecturers != null) formatEventLecturers(sb, guild, event.lecturers);
-                    if (both) sb.append(" | ");
-                    if (event.locations != null) sb.append(String.join(", ", event.locations));
+                sb.append("\n");
+                appendEmotes(sb, guild, event.name);
+                if (event.locations != null) {
+                    sb.append(" | ");
+                    sb.append(String.join(", ", event.locations));
                 }
                 sb.append("\n\n");
             }
@@ -328,14 +327,23 @@ public class Drache extends ListenerAdapter {
         channel.sendMessage(sb.toString()).queue();
     }
 
-    private void formatEventLecturers(StringBuilder sb, Guild guild, String[] lecturers) {
-        for (int i = 0; i < lecturers.length; i++) {
-            String emote = personEmotes.get(lecturers[i].toLowerCase().trim());
-            if (emote == null)
-                sb.append(lecturers[i]).append(" ").append(getServerEmoteAsMention(guild, "jensFaehler"));
-            else sb.append(getServerEmoteAsMention(guild, emote));
+    private void appendEmotes(StringBuilder sb, Guild guild, String name) {
+        String emoteData = lectureEmotes.get(name);
+        String[] emotes;
+        if (emoteData == null || (emoteData = emoteData.trim()).length() == 0)
+            emotes = null;
+        else
+            emotes = emoteData.split(";");
 
-            if (i < lecturers.length - 1) sb.append(", ");
+        if (emotes != null && emotes.length > 0) {
+            for (int i = 0; i < emotes.length; i++) {
+                String mention = getServerEmoteAsMention(guild, emotes[i]);
+                sb.append(mention);
+                if (i < emotes.length - 1)
+                    sb.append(", ");
+            }
+        } else {
+            sb.append(getServerEmoteAsMention(guild, "jensFaehler"));
         }
     }
 

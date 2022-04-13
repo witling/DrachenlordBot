@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class RaplaParser {
 
-    public static final String CALENDAR_URL = "https://api.stuv.app/rapla/lectures/MGH-TINF19";
+    public static final String CALENDAR_URL = "https://api.stuv.app/rapla/lectures/MGH-TINF19?archived=true";
 
     public static CalendarEntry getNextEvent() {
         List<CalendarEntry> list = parseRaplaCalendar(true);
@@ -62,7 +62,7 @@ public class RaplaParser {
         List<CalendarEntry> entries = new ArrayList<>();
 
         try {
-            URL url = new URL(CALENDAR_URL + (onlyFutureEvents ? "?archived=false" : "?archived=true"));
+            URL url = new URL(CALENDAR_URL);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             int status = con.getResponseCode();
@@ -85,7 +85,6 @@ public class RaplaParser {
                                 df1.parse(obj.getString("startTime")),
                                 df1.parse(obj.getString("endTime")),
                                 obj.getString("name"),
-                                new String[]{obj.getString("lecturer")},
                                 obj.hasValue("rooms", JSONValueType.ARRAY) ? obj.getArray("rooms").stream().map(JSONValue::toString).toArray(String[]::new) : new String[]{}
                         ));
                     } catch (ParseException e) {
@@ -100,6 +99,10 @@ public class RaplaParser {
             System.err.println("Failed to fetch/parse calender from StuV");
         }
 
+        if (onlyFutureEvents) {
+            Date now = new Date();
+            entries.removeIf(entry -> entry.startDate.before(now));
+        }
         return entries;
     }
 
@@ -108,13 +111,12 @@ public class RaplaParser {
 
         public final Date startDate, endDate;
         public final String name;
-        public final String[] locations, lecturers;
+        public final String[] locations;
 
-        public CalendarEntry(Date startDate, Date endDate, String name, String[] lecturers, String[] locations) {
+        public CalendarEntry(Date startDate, Date endDate, String name, String[] locations) {
             this.startDate = startDate;
             this.endDate = endDate;
             this.name = name;
-            this.lecturers = lecturers != null && lecturers.length > 0 ? lecturers : null;
             this.locations = locations != null && locations.length > 0 ? locations : null;
         }
 
@@ -151,7 +153,6 @@ public class RaplaParser {
             return "CalendarEntry{" + "startDate=" + dateFormatFull.format(startDate) +
                     ", endDate=" + dateFormatFull.format(startDate) +
                     ", name='" + name + '\'' +
-                    ", lecturers='" + Arrays.toString(lecturers) + '\'' +
                     ", location='" + Arrays.toString(locations) + '\'' +
                     '}';
         }
