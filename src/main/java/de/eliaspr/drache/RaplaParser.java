@@ -3,6 +3,7 @@ package de.eliaspr.drache;
 import de.eliaspr.json.JSONObject;
 import de.eliaspr.json.JSONParser;
 import de.eliaspr.json.JSONValue;
+import de.eliaspr.json.JSONValueType;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class RaplaParser {
 
-    public static final String CALENDAR_URL = "https://rapla.dhbw.de/rapla/calendar?key=25q8zGuMAw3elezlMsiegXs3Z-sCY45qHbigy7wiQ2e27FEEw1gUZrt95IawaK3jxZy_Y5bukYcuFWfh6SXaWY7MSSM5PUNOz287D3zip86_F6eY1VUpkgPRQ8l5aezCD3g6LoEwPOfJ2YoaMHf7UxtQsvlQz6A4gnJeFNckmgjSRYFGmbc_wwnrPF3FRyYS&salt=-2070726140&day=6&month=10&year=2021&goto=Datum+anzeigen&pages=12";
+    public static final String CALENDAR_URL = "https://api.stuv.app/rapla/lectures/MGH-TINF19";
 
     public static CalendarEntry getNextEvent() {
         List<CalendarEntry> list = parseRaplaCalendar(true);
@@ -61,7 +62,7 @@ public class RaplaParser {
         List<CalendarEntry> entries = new ArrayList<>();
 
         try {
-            URL url = new URL("https://api.vorlesungsplan.lars-rickert.de/lectures/MGH-TINF19");
+            URL url = new URL(CALENDAR_URL + (onlyFutureEvents ? "?archived=false" : "?archived=true"));
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             int status = con.getResponseCode();
@@ -81,12 +82,11 @@ public class RaplaParser {
                     JSONObject obj = entry.getObject();
                     try {
                         entries.add(new CalendarEntry(
-                                df1.parse(obj.getString("start")),
-                                df1.parse(obj.getString("end")),
-                                obj.getBoolean("isExam") ? "Klausur" : obj.getString("type"),
+                                df1.parse(obj.getString("startTime")),
+                                df1.parse(obj.getString("endTime")),
                                 obj.getString("name"),
                                 new String[]{obj.getString("lecturer")},
-                                obj.getArray("rooms").stream().map(JSONValue::toString).toArray(String[]::new)
+                                obj.hasValue("rooms", JSONValueType.ARRAY) ? obj.getArray("rooms").stream().map(JSONValue::toString).toArray(String[]::new) : new String[]{}
                         ));
                     } catch (ParseException e) {
                         e.printStackTrace();
@@ -107,13 +107,12 @@ public class RaplaParser {
     public static class CalendarEntry {
 
         public final Date startDate, endDate;
-        public final String type, name;
+        public final String name;
         public final String[] locations, lecturers;
 
-        public CalendarEntry(Date startDate, Date endDate, String type, String name, String[] lecturers, String[] locations) {
+        public CalendarEntry(Date startDate, Date endDate, String name, String[] lecturers, String[] locations) {
             this.startDate = startDate;
             this.endDate = endDate;
-            this.type = type;
             this.name = name;
             this.lecturers = lecturers != null && lecturers.length > 0 ? lecturers : null;
             this.locations = locations != null && locations.length > 0 ? locations : null;
@@ -151,7 +150,6 @@ public class RaplaParser {
         public String toString() {
             return "CalendarEntry{" + "startDate=" + dateFormatFull.format(startDate) +
                     ", endDate=" + dateFormatFull.format(startDate) +
-                    ", type='" + type + '\'' +
                     ", name='" + name + '\'' +
                     ", lecturers='" + Arrays.toString(lecturers) + '\'' +
                     ", location='" + Arrays.toString(locations) + '\'' +
