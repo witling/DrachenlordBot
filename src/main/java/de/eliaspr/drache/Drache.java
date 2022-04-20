@@ -247,7 +247,7 @@ public class Drache extends ListenerAdapter {
                     }
 
                     Calendar c = Calendar.getInstance();
-                    c.set(2022, Calendar.SEPTEMBER, 9, 12, 0, 0);
+                    c.set(2022, Calendar.SEPTEMBER, 12, 12, 0, 0);
                     long timeUntilMS = c.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
                     long timeUntilSec = timeUntilMS / 1000;
                     long days = timeUntilSec / 86400;
