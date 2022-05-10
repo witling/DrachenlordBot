@@ -11,11 +11,7 @@ import net.dv8tion.jda.api.utils.Compression;
 
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,6 +20,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Drache extends ListenerAdapter {
+
+    private static Drache instance;
+    private JDA jda;
 
     private static final Scheduler scheduler = new Scheduler();
 
@@ -81,13 +80,17 @@ public class Drache extends ListenerAdapter {
         builder.setActivity(Activity.playing("sich am Speer"));
         builder.setCompression(Compression.NONE);
 
-        Drache drache = new Drache();
-        builder.addEventListeners(drache);
+        instance = new Drache();
+        builder.addEventListeners(instance);
         builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
-        JDA jda = builder.build();
-        jda.awaitReady();
+        instance.jda = builder.build();
+        instance.jda.awaitReady();
 
-        drache.startTimetableSender(jda);
+        instance.startTimetableSender(instance.jda);
+    }
+
+    public static Drache getInstance() {
+        return instance;
     }
 
     private void startTimetableSender(JDA jda) {
@@ -126,11 +129,11 @@ public class Drache extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+        boolean isNerdServer = event.getGuild().getIdLong() == 657602012179070988L;
         try {
             if (DiscordBots.checkChannel(event.getChannel()) && !event.getAuthor().isBot()) {
                 String msg = event.getMessage().getContentRaw().toLowerCase().trim();
                 boolean etzala;
-                boolean isNerdServer = event.getGuild().getIdLong() == 657602012179070988L;
                 if (isNerdServer && msg.contains("\u1794") || msg.contains("\u1796") || msg.contains("\uD83C\uDDFA\uD83C\uDDF8")) {
                     String answer = trumpTweets.get(random.nextInt(trumpTweets.size()));
                     log(event, "Sending trump quote");
@@ -263,7 +266,7 @@ public class Drache extends ListenerAdapter {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException(Thread.currentThread(), e, isNerdServer, event.getChannel());
         }
     }
 
@@ -521,6 +524,50 @@ public class Drache extends ListenerAdapter {
         List<Emote> result = guild.getEmotesByName(emoteName, true);
         if (result.isEmpty()) return null;
         return result.get(0);
+    }
+
+    public void handleException(Thread thread, Throwable ex, boolean isNerdServer, MessageChannel channel) {
+        ex.printStackTrace();
+
+        User userEliaspr = jda.retrieveUserById(691326258893684778L).complete();
+        StringBuilder message = new StringBuilder();
+        if (userEliaspr != null)
+            message.append(userEliaspr.getAsMention()).append(" ");
+        message.append("**").append(ex.getClass().getName()).append("** in Thread **").append(thread.getName()).append("#").append(thread.hashCode()).append("**\n");
+        message.append("```");
+        ex.printStackTrace(new PrintWriter(new Writer() {
+            @Override
+            public void write(char[] cbuf, int off, int len) {
+                message.append(cbuf, off, len);
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
+        }));
+        message.append("```");
+
+        if (isNerdServer) {
+            if (channel == null)
+                channel = (MessageChannel) jda.getGuildChannelById(775663176904605707L /* #debugging */);
+            if (channel != null)
+                channel.sendMessage(message.toString()).queue();
+        }
+
+        File logDir = new File("log/");
+        if (!logDir.exists())
+            if (!logDir.mkdirs())
+                System.err.println("Could not create log directory");
+        File logFile = new File(logDir, "ex-" + SimpleDateFormat.getDateTimeInstance().format(new Date()).replace(':', '-').replace(",", "") + ".md");
+        try (FileWriter fw = new FileWriter(logFile)) {
+            fw.write(message.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

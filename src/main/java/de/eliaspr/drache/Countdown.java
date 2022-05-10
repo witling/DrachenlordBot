@@ -28,7 +28,7 @@ public class Countdown implements Runnable {
     }
 
     public Thread createThread() {
-        Thread th = new Thread(this);
+        Thread th = new Thread(this, "Lecture-Countdown");
         th.setDaemon(true);
         return th;
     }

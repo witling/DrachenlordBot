@@ -1,8 +1,6 @@
 package de.eliaspr.drache;
 
-import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -15,13 +13,10 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 public class PinToPDF {
 
@@ -29,25 +24,25 @@ public class PinToPDF {
 
     public static void createPDF(MessageReceivedEvent event) {
         new Thread(() -> {
-            ArrayList<File> tempFiles = new ArrayList<>();
-            TextChannel channel = (TextChannel) event.getChannel();
-            channel.sendMessage("PDF wird gerendert und hochgeladen...").queue();
-            List<Message> messages = channel.retrievePinnedMessages().complete();
+            try {
+                ArrayList<File> tempFiles = new ArrayList<>();
+                TextChannel channel = (TextChannel) event.getChannel();
+                channel.sendMessage("PDF wird gerendert und hochgeladen...").queue();
+                List<Message> messages = channel.retrievePinnedMessages().complete();
 
-            File tmpFolder = new File("tmp/");
-            if (!tmpFolder.exists())
-                tmpFolder.mkdirs();
+                File tmpFolder = new File("tmp/");
+                if (!tmpFolder.exists())
+                    tmpFolder.mkdirs();
 
-            PDDocument document = new PDDocument();
-            PDDocumentInformation information = document.getDocumentInformation();
-            information.setAuthor("Drachenlord");
-            information.setTitle("Klausurhilfe für " + channel.getName());
-            information.setCreator("eliaspr Drache Bot");
+                PDDocument document = new PDDocument();
+                PDDocumentInformation information = document.getDocumentInformation();
+                information.setAuthor("Drachenlord");
+                information.setTitle("Klausurhilfe für " + channel.getName());
+                information.setCreator("eliaspr Drache Bot");
 
-            for (Message msg : messages) {
-                PDPage page = new PDPage();
-                document.addPage(page);
-                try {
+                for (Message msg : messages) {
+                    PDPage page = new PDPage();
+                    document.addPage(page);
                     PDPageContentStream stream = new PDPageContentStream(document, page);
 
                     String msgContent = msg.getContentRaw().trim();
@@ -60,8 +55,8 @@ public class PinToPDF {
                         stream.endText();
                     }
 
-                    for(Message.Attachment attachment : msg.getAttachments()) {
-                        if(attachment.isImage()) {
+                    for (Message.Attachment attachment : msg.getAttachments()) {
+                        if (attachment.isImage()) {
                             String fileName = UUID.randomUUID().toString() + ".jpg";
                             System.out.println("Downloading " + attachment.getFileName() + " from " + attachment.getProxyUrl() + " as " + fileName);
                             InputStream is = attachment.retrieveInputStream().get();
@@ -77,7 +72,7 @@ public class PinToPDF {
                             Thread.sleep(200);
                             PDImageXObject pdfImage = PDImageXObject.createFromFileByContent(imageTmp, document);
                             final int width = 500;
-                            final int height = (int)(width / ((float)attachment.getWidth() / (float)attachment.getHeight()));
+                            final int height = (int) (width / ((float) attachment.getWidth() / (float) attachment.getHeight()));
                             final int x = 20;
                             final int y = PAGE_HEIGHT - height - 20 - (hasText ? 50 : 0);
                             stream.drawImage(pdfImage, x, y, width, height);
@@ -85,25 +80,21 @@ public class PinToPDF {
                     }
 
                     stream.close();
-                } catch (IOException | InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
                 }
-            }
 
-            String fileName = UUID.randomUUID().toString() + ".pdf";
-            try {
+                String fileName = UUID.randomUUID() + ".pdf";
                 System.out.println("Uploading generated PDF " + fileName);
                 File exportFile = new File(tmpFolder, fileName);
                 exportFile.deleteOnExit();
                 document.save(exportFile);
                 document.close();
                 event.getChannel().sendFile(exportFile).queue();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
-            for(File temp : tempFiles) {
-                temp.delete();
+                for (File temp : tempFiles) {
+                    temp.delete();
+                }
+            } catch (Exception e) {
+                Drache.getInstance().handleException(Thread.currentThread(), e, true, event.getChannel());
             }
         }, "Create-PDF").start();
     }

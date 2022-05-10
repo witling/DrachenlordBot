@@ -15,53 +15,53 @@ public class Scheduler implements Runnable {
 
     @Override
     public void run() {
-        long before, time;
-        while (true) {
-            before = System.currentTimeMillis();
+        try {
+            long before, time;
+            while (true) {
+                before = System.currentTimeMillis();
 
-            synchronized (newTasks) {
-                int i = 0;
-                while (!newTasks.isEmpty()) {
-                    Task next = newTasks.get(newTasks.size() - 1);
-                    for (; i < activeTasks.length; i++) {
-                        if (activeTasks[i] == null) {
-                            activeTasks[i++] = next;
-                            break;
+                synchronized (newTasks) {
+                    int i = 0;
+                    while (!newTasks.isEmpty()) {
+                        Task next = newTasks.get(newTasks.size() - 1);
+                        for (; i < activeTasks.length; i++) {
+                            if (activeTasks[i] == null) {
+                                activeTasks[i++] = next;
+                                break;
+                            }
                         }
-                    }
-                    newTasks.remove(newTasks.size() - 1);
-                }
-            }
-
-            long now = System.currentTimeMillis();
-            for (int i = 0; i < activeTasks.length; i++) {
-                Task next = activeTasks[i];
-                if(next != null) {
-                    if (now > next.nextTime) {
-                        boolean shouldStop = next.runnable.run();
-                        if (shouldStop || next.repeatTime <= 0) {
-                            next.isStopped = true;
-                        } else {
-                            next.nextTime += next.repeatTime * 1000L;
-                        }
-                    }
-                    if(next.isStopped) {
-                        if(next.afterTask != null)
-                            next.afterTask.run();
-                        activeTasks[i] = null;
-                        System.out.println("Task " + next + " stopped");
+                        newTasks.remove(newTasks.size() - 1);
                     }
                 }
-            }
 
-            time = System.currentTimeMillis() - before;
-            if(time > 0L) {
-                try {
+                long now = System.currentTimeMillis();
+                for (int i = 0; i < activeTasks.length; i++) {
+                    Task next = activeTasks[i];
+                    if (next != null) {
+                        if (now > next.nextTime) {
+                            boolean shouldStop = next.runnable.run();
+                            if (shouldStop || next.repeatTime <= 0) {
+                                next.isStopped = true;
+                            } else {
+                                next.nextTime += next.repeatTime * 1000L;
+                            }
+                        }
+                        if (next.isStopped) {
+                            if (next.afterTask != null)
+                                next.afterTask.run();
+                            activeTasks[i] = null;
+                            System.out.println("Task " + next + " stopped");
+                        }
+                    }
+                }
+
+                time = System.currentTimeMillis() - before;
+                if (time > 0L) {
                     Thread.sleep(1000L - time);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
+        } catch (Exception e) {
+            Drache.getInstance().handleException(Thread.currentThread(), e, true, null);
         }
     }
 

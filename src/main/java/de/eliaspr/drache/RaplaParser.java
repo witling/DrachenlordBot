@@ -88,15 +88,15 @@ public class RaplaParser {
                                 obj.hasValue("rooms", JSONValueType.ARRAY) ? obj.getArray("rooms").stream().map(JSONValue::toString).toArray(String[]::new) : new String[]{}
                         ));
                     } catch (ParseException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                 }).run();
             } else {
                 throw new Exception("HTTP status " + status);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             System.err.println("Failed to fetch/parse calender from StuV");
+            throw new RuntimeException(e);
         }
 
         if (onlyFutureEvents) {
