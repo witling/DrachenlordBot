@@ -679,4 +679,69 @@ Existiert zwischen participant01 und participant02 kein channel , wird die Fehle
 Existiert zwischen participant01 und participant02 ein channel wird die Nachricht mit dem Algorithmus und keyfile verschlüsselt und über den Channel kommuniziert .
 Das Versenden der Nachricht wird in der Tabelle messages protokolliert .
 Der Empfänger participant02 lädt dynamisch die zu dem Algorithmus korrespondierende Komponente und entschlüsselt die Nachricht .
-Nach Entschlüsselung wird in der Tabelle ein Datensatz erstellt und im Ausgabebereich der GUI die Meldung angezeigt
+Nach Entschlüsselung wird in der Tabelle ein Datensatz erstellt und im Ausgabebereich der GUI die Meldung angezeigt .
+
+Ein Rettungshubschrauber des Typs M145 auf Basis des Airbus A1451 ist ein zweimotoriger Mehrzweckhubschrauber , der in diesem Szenario für intensivmedizinische Notfälle in Zusammenhang mit COVID19 eingesetzt wird .
+Die zwei Triebwerke (Hauptrotor und Heckrotor) werden mit Elektromotoren realisiert .
+Die Höchstgeschwindigkeit beträgt 275 km/h , die Reisegeschwindigkeit 250 km/h .
+Der Hubschrauber hat die Kennung (D-MGHX) und eine eindeutige Seriennummer (UUID) .
+Zwei Hubschrauber mit der gleichen Seriennummer sind identisch .
+
+Der Hubschrauber ist in die Sektionen Cockpit , Kabine und Technik unterteilt .
+Die Sektion Cockpit umfasst je zur linken und rechten Seite [i] eine Einstiegstür , [ii] ein Sitzplatz mit Anschnallgurt , [iii] eine Anzeige und [iv] einen Cyclic Stick , einen Collective Pitch Control und zwei Anti-torque Pedals sowie zentral oberhalb [v] ein Bedienpaneel .
+Das Bedienpaneel hat fünf Schalter [i] Triebwerk „Hauptrotor“ an/aus , [ii] Triebwerk „Heckrotor“ an/aus , [iii] Anti-Collision Light an/aus , [iv] Landelicht an/aus und [v] Ver-/Entriegelung der hinteren Türen für Transporteinheit sowie einen Drehknopf mit den Einstellungen ( L : nur linke Batterie , B : beide Batterien zu gleichen Anteilen und R: nur rechte Batterie ) für die Bereitstellung der Energie durch das Batteriemanagement .
+
+Die Bedienung Cyclic Stick2 , Collective Pitch Control , Anti-torque Pedals und Schalter löst korrespondierende Kommandos an die Zentraleinheit aus .
+Das Verhalten ist detailliert zu recherchieren und weitestgehend realitätsnah abzubilden .
+Unter Berücksichtigung der für die Bewertung relevanten Rahmenbedingungen Haupt- und Heckrotor rotieren konstant mit je 600 RPM , Ratio [i] 0° = 0 km/h , [ii] 1° = 50 km/h, [iii] 2° = 100 km/h , [iv] 3° = 150 km/h , [v] 4° = 200 km/h und [vi] 5° = 250 km/h sowie Intervall für Anti-torque Pedals von 50 RPM ist die Implementierung frei wählbar .
+
+Die Sektion Kabine umfasst [i] zur linken und rechten Seite je einen Sitzplatz für Notarzt und Notfallsanitäter und [ii] eine Schiebetür sowie des Weiteren über eine [iii] Transporteinheit .
+Die Sektion Technik umfasst die Einheiten für Steuerung und Energie .
+
+Die Einheit für Energie umfasst zwei Batterien .
+Eine Batterie (L: 250, B: 100, H: 50) hat 1,25 Mio .
+
+Zellen (0/1) und wird von oben links nach unten rechts entladen .
+Die Batterien werden durch ein zentrales Batteriemanagement verwaltet .
+Die Rotoren beziehen die Energie zentral vom Batteriemanagement .
+
+Aus Aspekten der Vereinfachung berechnet sich der Energiebedarf durch die Formel 1 RPM = 10 Einheiten Energie .
+
+Ein Mensch ist charakterisiert durch Name , Vorname , Geschlecht (männlich, weiblich, transgender) , Geburtsdatum (dd.MM.yyyy) , Raucher (true | false) und geimpft (true | false) .
+Zu Simulationszwecken hat ein Mensch einen linken und rechten Lungenflügel , realisiert als physische Inklusion .
+Ein Lungenflügel hat 50x20 Zellen .
+Es werden drei Typen von Zellen [i] H (gesund) , [ii] D (beschädigt) und [iii] I (infiziert) unterschieden .
+Die Zelle I ist eine spezielle Zelle und beinhaltet bis zu 25 Vironen .
+Bei einem Raucher sind 20% zufällig ausgewählter Zellen je Lunge unabhängig von einer Infektion bereits geschädigt .
+Bezüglich der COVID-19-Infektion werden die Schweregrade S0 (3%) , S1 (5%) , S2 (10%) und S3 (15%) in Abhängigkeit von den (zusätzlich) zufällig geschädigten Zellen je Lunge unterschieden .
+
+Beim Einatmen werden Zeichen o (Sauerstoff) gemäß der Anzahl der gesunden Zellen aufgenommen und unmittelbar durch einen Prozess in der Zeile in das Zeichen c (Kohlendioxid) umgewandelt bzw.  gespeichert .
+
+Beim Ausatmen gibt die Zelle das gespeicherte Zeilen c ab .
+Je Iteration wird mit einer Wahrscheinlichkeit eine gesunde Zelle infiziert: Nichtraucher/S0: 2% , Raucher/S0: 4% , Nichtraucher/S1: 3% , Raucher/S1: 6% , Nichtraucher/S2: 6% , Raucher/S2: 10% , Nichtraucher/S3: 10% , Raucher/S3: 15% .
+Sind die Zellen in einer Lunge zu mindestens 80% oder in beiden Lungen zu je mindestens 65% geschädigt , verstirbt der Patient durch Ersticken .
+
+Ein Patient ist ein Mensch und wird aus Sicherheitsaspekten in einem EpiShuttle transportiert .
+Die Besatzung umfasst zwei Piloten , ein Notarzt und ein Notfallsanitäter .
+Piloten , Notarzt und Notfallsanitäter sind Mitarbeiter .
+Mitarbeiter sind gesunde Menschen , es sind keine Zellen der Lunge beschädigt .
+Mitarbeiter ist charakterisiert durch Personalnummer (5-stellig, alphanumerisch, z.B. A6VXD) , Name , Vorname , Geburtsdatum (dd.MM.yyyy) und IDCard .
+IDCard ist charakterisiert durch gültigBis (dd.MM.yyyy) , pin (4-stellig, nummerisch) .
+Die Pin auf der Karte ist mit AES verschlüsselt .
+
+Die spezielle IDCard für Piloten hat zusätzlich die Attribute typZulassung (H135 oder H145) , lizenzGültigBis (dd.MM.yyyy) und Lizenztyp (zufällig gewählt A, B oder C) .
+In einer Haltevorrichtung an der Unterseite ist eine Drohne verankert .
+Die Drohne verfügt über [i] eine Zentraleinheit , [ii] eine Kamera und [iii] eine Speichereinheit .
+Ein Suchgebiet 500x500 ist in
+100 Sektionen 50x50 unterteilt und mit zufällig gewählten Zeichen aus dem Pool [ a | g | h | m | n | t | u | w ] dargestellt .
+In einer zufällig gewählten Sektion ist an einer beliebigen Stelle die Zeichenkette
+„human“ zu platzieren .
+Mit einem Schalter am Bedienpaneel wird die autonome Drohne ausgeklinkt .
+
+Die Drohne fliegt die Sektionen von oben links nach unten rechts ab .
+Die Kamera überträgt das Bild der Sektion an die Zentraleinheit mit KI .
+Die KI durchsucht das Bild nach der Zeichenkette „human“ .
+Bei Fund werden der Umkreis von drei 3 Zeichen zu der Zeichenkette „human“ extrahiert und das Bild 11x7 erstellt .
+Zu dem Bild werden die zusätzlichen Informationen [i] Erstellungsdatum im Format dd.MM.yyyy HH:mm:ss , [ii] Sektion und [iii] x/y-Koordinate für das erste Zeichen h erfasst .
+Die Speichereinheit ist ein Stack .
+Nach der Suche kehrt die Drohne zum Hubschrauber zurück und klinkt sich automatisch in die Haltevorrichtung ein .
